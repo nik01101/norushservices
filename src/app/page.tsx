@@ -26,7 +26,7 @@ export default function Home() {
                   Reliable Help, Just a Click Away
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Swift Services offers professional furniture assembly, mounting, and moving services to make your life easier.
+                  No Rush offers professional furniture assembly, mounting, and moving services to make your life easier.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">

@@ -12,7 +12,7 @@ export default function AdminLoginPage() {
         <div className="text-center">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
                 <Package className="h-8 w-8 text-primary" />
-                <span className="font-bold text-2xl">Swift Services</span>
+                <span className="font-bold text-2xl">No Rush</span>
             </Link>
             <h1 className="text-3xl font-bold font-headline">Admin Login</h1>
             <p className="text-muted-foreground">Access the booking management dashboard.</p>

@@ -3,7 +3,7 @@ export function Footer() {
     <footer className="border-t">
       <div className="container mx-auto py-6 px-4 md:px-6">
         <p className="text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Swift Services. All rights reserved.
+          &copy; {new Date().getFullYear()} No Rush. All rights reserved.
         </p>
       </div>
     </footer>
