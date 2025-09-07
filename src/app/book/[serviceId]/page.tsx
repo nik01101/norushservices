@@ -21,12 +21,13 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date || !selectedTime || !name || !email || !address) {
+    if (!date || !selectedTime || !name || !email || !address || !phone) {
       toast({
         title: 'Missing Information',
         description: 'Please fill out all fields to complete your booking.',
@@ -43,6 +44,7 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
             serviceId: service?.id,
             customerName: name,
             customerEmail: email,
+            customerPhone: phone,
             customerAddress: address,
             bookingDate: date,
             bookingTime: selectedTime,
@@ -110,6 +112,10 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" placeholder="john.doe@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
+             <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input id="phone" type="tel" placeholder="(123) 456-7890" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+              </div>
             <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
                 <Input id="address" placeholder="123 Main St, Anytown" value={address} onChange={(e) => setAddress(e.target.value)} required />
