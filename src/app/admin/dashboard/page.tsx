@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { format } from 'date-fns';
 
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
@@ -92,7 +93,7 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{getServiceName(booking.serviceId)}</TableCell>
                         <TableCell className="hidden md:table-cell">
-                            {booking.bookingDate.toLocaleDateString()} at {booking.bookingTime}
+                            {format(booking.bookingDate, 'MM/dd/yyyy')} at {booking.bookingTime}
                         </TableCell>
                         <TableCell>
                             <Badge variant={booking.status === 'pending' ? 'secondary' : booking.status === 'confirmed' ? 'default' : 'destructive'}
