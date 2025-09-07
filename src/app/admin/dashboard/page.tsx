@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,8 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Check, X, LogOut } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { MoreHorizontal, Check, X, LogOut, CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
@@ -22,6 +24,9 @@ export default function AdminDashboard() {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(initialTimeSlots);
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
+  const [reschedulingBooking, setReschedulingBooking] = useState<Booking | null>(null);
+  const [newDate, setNewDate] = useState<Date | undefined>(undefined);
+  const [newTime, setNewTime] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     setIsClient(true);
@@ -57,6 +62,38 @@ export default function AdminDashboard() {
 
   const toggleTimeSlot = (time: string) => {
     setTimeSlots(prev => prev.map(slot => slot.time === time ? {...slot, available: !slot.available} : slot));
+  };
+  
+  const openRescheduleDialog = (booking: Booking) => {
+    setReschedulingBooking(booking);
+    setNewDate(booking.bookingDate);
+    setNewTime(booking.bookingTime);
+  };
+  
+  const closeRescheduleDialog = () => {
+    setReschedulingBooking(null);
+    setNewDate(undefined);
+    setNewTime(undefined);
+  }
+
+  const handleReschedule = () => {
+    if (!reschedulingBooking || !newDate || !newTime) return;
+
+    setBookings(currentBookings =>
+        currentBookings.map(b =>
+            b.id === reschedulingBooking.id
+                ? { ...b, bookingDate: newDate, bookingTime: newTime, status: 'confirmed' }
+                : b
+        )
+    );
+
+    toast({
+        title: 'Booking Rescheduled',
+        description: 'The booking has been updated with the new date and time.',
+        className: 'bg-accent text-accent-foreground',
+    });
+
+    closeRescheduleDialog();
   };
 
   return (
@@ -99,7 +136,7 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{getServiceName(booking.serviceId)}</TableCell>
                         <TableCell className="hidden md:table-cell">
-                          {isClient ? format(booking.bookingDate, 'MM/dd/yyyy') : ''} at {booking.bookingTime}
+                          {isClient ? format(new Date(booking.bookingDate), 'MM/dd/yyyy') : ''} at {booking.bookingTime}
                         </TableCell>
                         <TableCell>
                             <Badge variant={booking.status === 'pending' ? 'secondary' : booking.status === 'confirmed' ? 'default' : 'destructive'}
@@ -119,6 +156,10 @@ export default function AdminDashboard() {
                                 <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'confirmed')}>
                                 <Check className="mr-2 h-4 w-4" /> Confirm
                                 </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openRescheduleDialog(booking)}>
+                                  <CalendarIcon className="mr-2 h-4 w-4" /> Reschedule
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'cancelled')} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
                                 <X className="mr-2 h-4 w-4" /> Cancel
                                 </DropdownMenuItem>
@@ -167,6 +208,50 @@ export default function AdminDashboard() {
             </Card>
         </div>
       </main>
+      <Dialog open={!!reschedulingBooking} onOpenChange={(isOpen) => !isOpen && closeRescheduleDialog()}>
+        <DialogContent className="sm:max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Reschedule Booking</DialogTitle>
+            <DialogDescription>
+              Select a new date and time for the booking for {reschedulingBooking?.customerName}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid md:grid-cols-2 gap-8 py-4">
+            <div>
+              <h3 className="font-semibold mb-4 text-center">Select New Date</h3>
+              <div className="flex justify-center">
+                <Calendar
+                  mode="single"
+                  selected={newDate}
+                  onSelect={setNewDate}
+                  disabled={(d) => d < new Date(new Date().setHours(0,0,0,0)) || disabledDates.some(disabledDate => disabledDate.toDateString() === d.toDateString())}
+                  initialFocus
+                  className="p-0"
+                />
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4 text-center">Select New Time</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {timeSlots.map((slot: TimeSlot) => (
+                  <Button
+                    key={slot.time}
+                    variant={newTime === slot.time ? 'default' : 'outline'}
+                    disabled={!slot.available}
+                    onClick={() => setNewTime(slot.time)}
+                  >
+                    {slot.time}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={closeRescheduleDialog}>Cancel</Button>
+            <Button onClick={handleReschedule} disabled={!newDate || !newTime}>Update Booking</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
