@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { bookings as initialBookings, services, timeSlots as initialTimeSlots, disabledDates as initialDisabledDates } from '@/lib/data';
 import type { Booking, TimeSlot } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -21,6 +21,11 @@ export default function AdminDashboard() {
   const [disabledDates, setDisabledDates] = useState<Date[]>(initialDisabledDates);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(initialTimeSlots);
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const getServiceName = (serviceId: string) => {
     return services.find(s => s.id === serviceId)?.name || 'Unknown Service';
@@ -90,10 +95,11 @@ export default function AdminDashboard() {
                         <TableCell>
                             <div className="font-medium">{booking.customerName}</div>
                             <div className="text-sm text-muted-foreground">{booking.customerEmail}</div>
+                            <div className="text-sm text-muted-foreground">{booking.customerPhone}</div>
                         </TableCell>
                         <TableCell>{getServiceName(booking.serviceId)}</TableCell>
                         <TableCell className="hidden md:table-cell">
-                            {format(booking.bookingDate, 'MM/dd/yyyy')} at {booking.bookingTime}
+                          {isClient ? format(booking.bookingDate, 'MM/dd/yyyy') : ''} at {booking.bookingTime}
                         </TableCell>
                         <TableCell>
                             <Badge variant={booking.status === 'pending' ? 'secondary' : booking.status === 'confirmed' ? 'default' : 'destructive'}

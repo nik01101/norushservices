@@ -12,6 +12,7 @@ export type Booking = {
   serviceId: string;
   customerName: string;
   customerEmail: string;
+  customerPhone: string;
   customerAddress: string;
   bookingDate: Date;
   bookingTime: string;
