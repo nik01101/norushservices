@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full ${inter.variable} ${noto.variable}`}>
+    <html lang="en" className={`h-full ${inter.variable} ${noto.variable}`} suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="https://use.typekit.net/dth0iyh.css"/>
       </head>
