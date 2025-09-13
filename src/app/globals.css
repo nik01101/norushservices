@@ -73,31 +73,24 @@
   body {
     @apply bg-background text-foreground;
   }
-  .bgdiv{
-    background-repeat: repeat-x;
-    background-image: url("../img/fondo.png");
-    background-size: auto;
-    height: 300px;
-    width: 100%;
-  }
   .bgsection{
     background-repeat: no-repeat;
     background-image: url("../img/fondo_2.png");
-    background-size: auto 100%;
+    background-size: auto 100px;
     background-position: center;
   }
   .footerbg{
-    background-repeat: repeat-x;
+    background-repeat: no-repeat;
     background-image: url("../img/fondo.png");
-    background-position: 10% 17%;
-    background-size: 50%;
+    background-position: center;
+    background-size: 100%;
   }
   .btnbg{
     background-color: #321c1f;
   }
   h1{
     font-family: "Akira";
-    font-variation-settings: 'wdth' 100;
+    /* font-variation-settings: 'wdth' 100; */
     /* color: #321c1f; */
     color: black;
   }
@@ -110,7 +103,7 @@
   }
   h2{
     font-family: "Akira";
-    font-variation-settings: 'wdth' 100;
+    /* font-variation-settings: 'wdth' 100; */
     /* color: #321c1f; */
     color: black;
   }

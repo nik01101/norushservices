@@ -31,7 +31,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`h-full ${inter.variable} ${noto.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="stylesheet" href="https://use.typekit.net/dth0iyh.css"/>
       </head>
       <body className="font-body antialiased h-full bodybg">
         <div className="flex flex-col min-h-screen">
