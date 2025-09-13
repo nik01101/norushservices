@@ -74,10 +74,16 @@
     @apply bg-background text-foreground;
   }
   .footerbg{
+    background-repeat: repeat-x;
+    background-image: url("../img/footer.png");
+    background-position: top;
+    background-size: cover;
+  }
+  .sectionbg{
     background-repeat: no-repeat;
-    background-image: url("../img/fondo.png");
+    background-image: url("../img/fondo_mas_chiquita_osi_osi.png");
     background-position: center;
-    background-size: 100%;
+    background-size: cover;
   }
   .btnbg{
     background-color: #321c1f;

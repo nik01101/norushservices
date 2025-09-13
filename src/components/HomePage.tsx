@@ -12,7 +12,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 export function HomePage() {
   return (
     <>
-      <section className="w-full  bodybg">
+      <section className="w-full bodybg">
         <div className="container mx-auto px-8 md:px-6">
           <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2 items-center">
             <div className="flex flex-col justify-center space-y-7">
@@ -55,15 +55,17 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      <section id="services" className="w-full py-12 md:py-24 lg:py-32 bodybg relative">
-        <Image
-          src="https://picsum.photos/seed/bg/1920/1080"
-          alt="Abstract background"
-          fill
-          quality={50}
-          className="object-cover -z-10 opacity-20"
-          data-ai-hint="abstract texture"
-        />
+      <section id="services" className="w-full py-12 md:py-24 lg:py-32 relative sectionbg">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="https://picsum.photos/seed/bg/1920/1080"
+            alt="Background"
+            fill
+            style={{ objectFit: 'cover' }}
+            className="opacity-20"
+            data-ai-hint="abstract texture"
+          />
+        </div>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
@@ -102,6 +104,28 @@ export function HomePage() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+       <section id="about" className="w-full py-12 md:py-24 lg:py-32 bodybg">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
+            <div className="space-y-4">
+              <h2 className="text-4xl sm:text-5xl">About No Rush</h2>
+              <p className="text-muted-foreground md:text-xl/relaxed text-neutral-950">
+                Hi, I'm Alex! After years of struggling to assemble my own flat-pack furniture and seeing friends go through the same frustration, I founded No Rush. My mission is simple: to provide reliable, friendly, and high-quality help for those small but important tasks around the house. We take the stress out of setting up your home so you can enjoy it, no rush.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <Image
+                src="https://picsum.photos/seed/aboutme/600/600"
+                alt="Founder of No Rush"
+                width={600}
+                height={600}
+                className="rounded-full object-cover aspect-square"
+                data-ai-hint="friendly person portrait"
+              />
+            </div>
           </div>
         </div>
       </section>
