@@ -17,9 +17,15 @@ export default function Home() {
         <div className="container mx-auto px-8 md:px-6">
           <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2 items-center">
             <div className="flex flex-col justify-center space-y-7">
-              <Image src={logo} alt="Logo" 
-                    className="sm:logo-sm md:logo-md lg:logo-lg xl:logo-xl"
-              />
+              <div className="mt-8">
+                <Image 
+                  src={logo} 
+                  alt="No Rush Logo"
+                  width={200}
+                  height={100}
+                  className="w-48 h-auto md:w-56" 
+                />
+              </div>
               <div className="space-y-7">
                 <h1 className="text-5xl sm:text-5xl xl:text-8xl/none">
                   Reliable Help, Just a Click Away

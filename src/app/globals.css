@@ -73,27 +73,6 @@
   body {
     @apply bg-background text-foreground;
   }
-  .logo{
-    margin-top: 50px;
-    height: 100px;
-    width: auto;
-  }
-  .logo-sm{
-    height: 20%;
-    width: auto;
-  }
-  .logo-md{
-    height: 40%;
-    width: auto;
-  }
-  .logo-lg{
-    height: 70%;
-    width: auto;
-  }
-  .logo-xl{
-    height: 100%;
-    width: auto;
-  }
   .bgdiv{
     background-repeat: repeat-x;
     background-image: url("../img/fondo.png");
