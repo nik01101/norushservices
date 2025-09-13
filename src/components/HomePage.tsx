@@ -21,7 +21,6 @@ export function HomePage() {
                   alt="No Rush Logo"
                   width={200}
                   height={100}
-                  className="w-48 h-auto md:w-56" 
                 />
               </div>
               <div className="space-y-7">
@@ -55,7 +54,7 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      <section id="services" className="bgsection w-full py-12 md:py-24 lg:py-32">
+      <section id="services" className="w-full py-12 md:py-24 lg:py-32 bodybg">
         <div className=" px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
