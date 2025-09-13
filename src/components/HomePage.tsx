@@ -57,7 +57,7 @@ export function HomePage() {
       </section>
       <section id="services" className="w-full py-12 md:py-24 lg:py-32 bodybg relative">
         <Image
-          src="https://picsum.photos/seed/services-bg/1920/1080"
+          src="https://picsum.photos/seed/bg/1920/1080"
           alt="Abstract background"
           fill
           quality={50}
