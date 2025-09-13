@@ -1,3 +1,4 @@
+
 import { services } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import Link from 'next/link';
@@ -42,7 +43,7 @@ export function HomePage() {
             </div>
             <div className="flex justify-center items-center">
               <Image
-                src="https://picsum.photos/1200/800"
+                src="https://picsum.photos/seed/hero/1200/800"
                 alt="Hero"
                 width={1200}
                 height={800}
@@ -54,8 +55,16 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      <section id="services" className="w-full py-12 md:py-24 lg:py-32 bodybg">
-        <div className=" px-4 md:px-6">
+      <section id="services" className="w-full py-12 md:py-24 lg:py-32 bodybg relative">
+        <Image
+          src="https://picsum.photos/seed/services-bg/1920/1080"
+          alt="Abstract background"
+          fill
+          quality={50}
+          className="object-cover -z-10 opacity-20"
+          data-ai-hint="abstract texture"
+        />
+        <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <h2 className="text-4xl sm:text-5xl">Our Services</h2>
