@@ -58,11 +58,91 @@
   }
 }
 
+@font-face {
+  font-family: Akira;
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url("./AkiraExpanded.otf") format("woff2");
+}
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .logo{
+    margin-top: 50px;
+    height: 100px;
+    width: auto;
+  }
+  .logo-sm{
+    height: 20%;
+    width: auto;
+  }
+  .logo-md{
+    height: 40%;
+    width: auto;
+  }
+  .logo-lg{
+    height: 70%;
+    width: auto;
+  }
+  .logo-xl{
+    height: 100%;
+    width: auto;
+  }
+  .bgdiv{
+    background-repeat: repeat-x;
+    background-image: url("../img/fondo.png");
+    background-size: auto;
+    height: 300px;
+    width: 100%;
+  }
+  .bgsection{
+    background-repeat: no-repeat;
+    background-image: url("../img/fondo_2.png");
+    background-size: auto 100%;
+    background-position: center;
+  }
+  .footerbg{
+    background-repeat: repeat-x;
+    background-image: url("../img/fondo.png");
+    background-position: 10% 17%;
+    background-size: 50%;
+  }
+  .btnbg{
+    background-color: #321c1f;
+  }
+  h1{
+    font-family: "Akira";
+    font-variation-settings: 'wdth' 100;
+    /* color: #321c1f; */
+    color: black;
+  }
+  p{
+    font-family: "Parkinsans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    /* color: #321c1f; */
+    color: black;
+  }
+  h2{
+    font-family: "Akira";
+    font-variation-settings: 'wdth' 100;
+    /* color: #321c1f; */
+    color: black;
+  }
+  .btnbg{
+    /* background-color: #321c1f; */
+    background-color: black;
+  }
+  .bodybg{
+    background-color: #daf3e7;
+  }
+  .contrastbg{
+    background-color: #00D6A8;
   }
 }

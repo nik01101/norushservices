@@ -17,7 +17,7 @@ export default function BookingConfirmationPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button asChild className="w-full">
+          <Button asChild className="w-full bg-black text-white">
             <Link href="/">Back to Home</Link>
           </Button>
         </CardContent>

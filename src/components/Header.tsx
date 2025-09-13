@@ -1,13 +1,16 @@
 import Link from 'next/link';
-import { Package, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
+import Image from 'next/image';
+import logo from '../img/logo_png.png';
 
 export function Header() {
   return (
-    <header className="bg-card/80 backdrop-blur-sm border-b sticky top-0 z-40">
+    <header className="backdrop-blur-sm top-0 z-40">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
-          <Package className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">No Rush</span>
+        {/* <Image src={logo} alt="Logo" 
+        className="logo"
+        /> */}
         </Link>
         <nav className="flex items-center gap-4">
           <Link

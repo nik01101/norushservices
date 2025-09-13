@@ -1,5 +1,6 @@
 'use client';
 
+import '../.././globals.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { services, timeSlots as availableTimeSlots, disabledDates } from '@/lib/data';
@@ -93,13 +94,13 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
       </Button>
       <div className="grid md:grid-cols-2 gap-12">
         <div>
-          <Card className="mb-8">
+          <Card className="mb-8 bg-[#00D6A8]">
             <CardHeader>
-              <CardTitle className="font-headline text-3xl">{service.name}</CardTitle>
-              <CardDescription>{service.description}</CardDescription>
+              <CardTitle className="font-headline text-3xl text-[black]">{service.name}</CardTitle>
+              <CardDescription className="text-[black]">{service.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-primary">${service.price}</p>
+              <p className="text-4xl font-bold text-[black]">${service.price}</p>
             </CardContent>
           </Card>
            <form onSubmit={handleBooking} className="space-y-6">
@@ -120,7 +121,7 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
                 <Label htmlFor="address">Address</Label>
                 <Input id="address" placeholder="123 Main St, Anytown" value={address} onChange={(e) => setAddress(e.target.value)} required />
             </div>
-            <Button type="submit" className="w-full h-12 text-lg" disabled={isLoading}>
+            <Button type="submit" className="w-full h-12 text-lg bg-[black] text-white" disabled={isLoading}>
               {isLoading ? 'Booking...' : `Book for $${service.price}`}
             </Button>
           </form>
@@ -130,14 +131,21 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
           <div>
             <h2 className="font-bold text-xl mb-4 font-headline">1. Select a Date</h2>
             <Card>
-              <CardContent className="p-2 flex justify-center">
+              <CardContent className="p-2 flex justify-center bg-[#faf9f2]">
                 <Calendar
                   mode="single"
                   selected={date}
                   onSelect={setDate}
                   disabled={(d) => d < new Date(new Date().setHours(0,0,0,0)) || disabledDates.some(disabledDate => disabledDate.toDateString() === d.toDateString())}
                   initialFocus
-                  className="p-0"
+                  classNames={{
+                    day_selected: "bg-[black] text-white focus:bg-[black]",
+                    day_outside: "text-gray-900 opacity-100",
+                    day_today: "bg-[red] text-white",
+                    day_disabled: "text-gray-900 opacity-100",
+                    nav_button: "text-[black]",
+                    head_cell: "text-[black]",
+                  }}
                 />
               </CardContent>
             </Card>
@@ -147,11 +155,15 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
             <div className="grid grid-cols-3 gap-2">
               {availableTimeSlots.map((slot: TimeSlot) => (
                 <Button
-                  key={slot.time}
-                  variant={selectedTime === slot.time ? 'default' : 'outline'}
-                  disabled={!slot.available}
-                  onClick={() => setSelectedTime(slot.time)}
-                >
+                key={slot.time}
+                onClick={() => setSelectedTime(slot.time)}
+                disabled={!slot.available}
+                className={
+                  selectedTime === slot.time
+                    ? "bg-[#00D6A8] text-white hover:bg-[#00D6A8] hover:text-white"
+                    : "bg-[black] text-white hover:bg-[#00D6A8] hover:text-white"
+                }
+              >
                   {slot.time}
                 </Button>
               ))}
