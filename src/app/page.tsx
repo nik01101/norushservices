@@ -45,6 +45,7 @@ export default function Home() {
                 height={800}
                 className="mx-auto rounded-xl object-cover w-full lg:aspect-square"
                 data-ai-hint="organized living room"
+                priority
               />
             </div>
           </div>
