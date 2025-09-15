@@ -24,9 +24,9 @@ export function ServicesCards() {
                 </div>
             </div>
             <div className="center-content">
-                <div className="mx-auto grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mx-auto grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4 justify-center">
                     {services.map((service: Service) => (
-                    <Card key={service.id} className="bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none">
+                    <Card key={service.id} className="bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
                         <div className="p-2">
                         <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border-2 border-blue-400">
                             <Image
