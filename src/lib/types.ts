@@ -5,6 +5,7 @@ export type Service = {
   price: number;
   imageUrl: string;
   imageHint: string;
+  extraFee?: string;
 };
 
 export type Booking = {

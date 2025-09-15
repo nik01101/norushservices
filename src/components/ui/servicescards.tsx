@@ -40,6 +40,9 @@ export function ServicesCards() {
                     <CardContent className="p-6 flex-grow flex flex-col">
                     <h3 className="font-headline text-3xl font-[Akira] uppercase text-[#00D6A8] leading-tight">{service.name}</h3>
                     <p className="mt-2 text-white/90 flex-grow">{service.description}</p>
+                     {service.extraFee && (
+                        <p className="mt-2 text-sm text-[#00D6A8]">{service.extraFee}</p>
+                    )}
                     <div className="mt-6 flex justify-between items-end">
                         <p className="text-4xl font-bold text-[#00D6A8]">${service.price}/hr</p>
                         <Button asChild className="bg-[#00D6A8] text-black rounded-lg hover:bg-[#00b38f]">

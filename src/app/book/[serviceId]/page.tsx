@@ -32,6 +32,9 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
             </CardHeader>
             <CardContent>
               <p className="text-4xl font-bold text-[black]">${service.price}/hr</p>
+               {service.extraFee && (
+                <p className="mt-2 text-sm text-black">{service.extraFee}</p>
+              )}
             </CardContent>
           </Card>
           <BookingForm service={service} timeSlots={timeSlots} disabledDates={disabledDates} />
