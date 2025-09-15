@@ -1,3 +1,4 @@
+
 import '../.././globals.css';
 import { services, timeSlots, disabledDates } from '@/lib/data';
 import { notFound } from 'next/navigation';
@@ -30,7 +31,7 @@ export default function BookingPage({ params }: { params: { serviceId: string } 
               <CardDescription className="text-[black]">{service.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-[black]">${service.price}</p>
+              <p className="text-4xl font-bold text-[black]">${service.price}/hr</p>
             </CardContent>
           </Card>
           <BookingForm service={service} timeSlots={timeSlots} disabledDates={disabledDates} />

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -94,7 +95,7 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
                 <Input id="address" placeholder="123 Main St, Anytown" value={address} onChange={(e) => setAddress(e.target.value)} required />
             </div>
             <Button type="submit" className="w-full h-12 text-lg bg-[black] text-white" disabled={isLoading}>
-              {isLoading ? 'Booking...' : `Book for $${service.price}`}
+              {isLoading ? 'Booking...' : `Book for $${service.price}/hr`}
             </Button>
         </form>
 

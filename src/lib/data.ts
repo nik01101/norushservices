@@ -5,7 +5,7 @@ export const services: Service[] = [
     id: 'furniture-assembly',
     name: 'Furniture Assembly',
     description: 'Expert assembly for your flat-pack furniture. Quick, reliable, and hassle-free.',
-    price: 80,
+    price: 50,
     imageUrl: 'https://picsum.photos/600/400',
     imageHint: 'furniture assembly',
   },
