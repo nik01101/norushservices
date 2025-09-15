@@ -8,12 +8,13 @@ export const services: Service[] = [
     price: 50,
     imageUrl: 'https://picsum.photos/600/400',
     imageHint: 'furniture assembly',
+    extraFee: 'The minimum service time is 2 hours.'
   },
   {
     id: 'tv-mounting',
     name: 'Mounting',
     description: 'Secure and professional mounting services for any wall type.',
-    price: 120,
+    price: 50,
     imageUrl: 'https://picsum.photos/600/400',
     imageHint: 'living room',
   },
