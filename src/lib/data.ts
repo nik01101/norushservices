@@ -11,15 +11,15 @@ export const services: Service[] = [
   },
   {
     id: 'tv-mounting',
-    name: 'TV Mounting',
-    description: 'Secure and professional TV mounting services for any wall type.',
+    name: 'Mounting',
+    description: 'Secure and professional mounting services for any wall type.',
     price: 120,
     imageUrl: 'https://picsum.photos/600/400',
     imageHint: 'living room',
   },
   {
     id: 'shelf-installation',
-    name: 'Shelf Installation',
+    name: 'Trash Removal Furniture',
     description: 'Perfectly level and securely installed shelves to organize your space.',
     price: 60,
     imageUrl: 'https://picsum.photos/600/400',
@@ -27,7 +27,7 @@ export const services: Service[] = [
   },
   {
     id: 'local-moving',
-    name: 'Local Moving',
+    name: 'Moving',
     description: 'Efficient and careful moving services for your home or office within the city.',
     price: 350,
     imageUrl: 'https://picsum.photos/600/400',

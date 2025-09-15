@@ -1,13 +1,16 @@
 
+
 import { services } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Star } from 'lucide-react';
 import logo from '../img/logo_png.png';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import rodo from '../img/rodo.jpg'
+import { TestimonialCarousel,TestimonialCarousel2 } from './ui/testimonies';
+
 
 export function HomePage() {
   return (
@@ -55,17 +58,14 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      <section id="services" className="w-full py-12 md:py-24 lg:py-32 relative sectionbg">
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src="https://picsum.photos/seed/bg/1920/1080"
-            alt="Background"
+      <section id="services" className="w-full py-12 md:py-24 lg:py-32 sectionbg relative">
+        <Image
+            src="https://picsum.photos/seed/services-bg/1920/1080"
+            alt="background"
             fill
-            style={{ objectFit: 'cover' }}
-            className="opacity-20"
-            data-ai-hint="abstract texture"
-          />
-        </div>
+            className="object-cover -z-10"
+            data-ai-hint="abstract pattern"
+        />
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
@@ -75,27 +75,26 @@ export function HomePage() {
               </p>
             </div>
           </div>
-          <div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
             {services.map((service: Service) => (
-              <Card key={service.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <CardHeader className="p-0">
-                  <Image
-                    src={service.imageUrl}
-                    alt={service.name}
-                    width={600}
-                    height={400}
-                    className="aspect-video w-full object-cover"
-                    data-ai-hint={service.imageHint}
-                  />
-                </CardHeader>
-                <CardContent className="p-6 flex-grow flex flex-col justify-between">
-                  <div>
-                    <CardTitle className="mb-2 font-headline">{service.name}</CardTitle>
-                    <CardDescription className="text-muted-foreground">{service.description}</CardDescription>
+               <Card key={service.id} className="bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none">
+                <div className="p-2">
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border-2 border-blue-400">
+                    <Image
+                      src={service.imageUrl}
+                      alt={service.name}
+                      fill
+                      className="object-cover"
+                      data-ai-hint={service.imageHint}
+                    />
                   </div>
-                  <div className="mt-4 flex justify-between items-center">
-                    <p className="text-2xl font-bold text-primary">${service.price}</p>
-                    <Button asChild>
+                </div>
+                <CardContent className="p-6 flex-grow flex flex-col">
+                  <h3 className="font-headline text-3xl font-bold uppercase text-[#00D6A8] leading-tight">{service.name}</h3>
+                  <p className="mt-2 text-white/90 flex-grow">{service.description}</p>
+                  <div className="mt-6 flex justify-between items-end">
+                    <p className="text-4xl font-bold text-[#00D6A8]">${service.price}</p>
+                    <Button asChild className="bg-[#00D6A8] text-black rounded-lg hover:bg-[#00b38f]">
                       <Link href={`/book/${service.id}`}>
                         Book Now <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
@@ -113,12 +112,12 @@ export function HomePage() {
             <div className="space-y-4">
               <h2 className="text-4xl sm:text-5xl">About No Rush</h2>
               <p className="text-muted-foreground md:text-xl/relaxed text-neutral-950">
-                Hi, I'm Alex! After years of struggling to assemble my own flat-pack furniture and seeing friends go through the same frustration, I founded No Rush. My mission is simple: to provide reliable, friendly, and high-quality help for those small but important tasks around the house. We take the stress out of setting up your home so you can enjoy it, no rush.
+                Hi, I'm Rodrigo! After years of struggling to assemble my own flat-pack furniture and seeing friends go through the same frustration, I founded No Rush. My mission is simple: to provide reliable, friendly, and high-quality help for those small but important tasks around the house. We take the stress out of setting up your home so you can enjoy it, no rush.
               </p>
             </div>
             <div className="flex justify-center">
               <Image
-                src="https://picsum.photos/seed/aboutme/600/600"
+                src={rodo}
                 alt="Founder of No Rush"
                 width={600}
                 height={600}
@@ -139,80 +138,8 @@ export function HomePage() {
               </p>
             </div>
           </div>
-          <div className="mx-auto grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <Avatar>
-                    <AvatarImage src="https://picsum.photos/seed/1/100/100" data-ai-hint="person face" />
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="font-bold text-lg">Jessica Day</CardTitle>
-                    <p className="text-sm text-muted-foreground">Homeowner</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">"No Rush was a lifesaver! They assembled our nursery furniture quickly and flawlessly. The team was professional, friendly, and so careful. Highly recommend!"</p>
-              </CardContent>
-              <CardFooter className="flex items-center gap-1">
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <Avatar>
-                    <AvatarImage src="https://picsum.photos/seed/2/100/100" data-ai-hint="person face" />
-                    <AvatarFallback>MS</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="font-bold text-lg">Mark S.</CardTitle>
-                    <p className="text-sm text-muted-foreground">Small Business Owner</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">"The local moving service was exceptional. They handled our office move with incredible efficiency and care. Not a single item was damaged. Worth every penny."</p>
-              </CardContent>
-              <CardFooter className="flex items-center gap-1">
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <Avatar>
-                    <AvatarImage src="https://picsum.photos/seed/3/100/100" data-ai-hint="person face" />
-                    <AvatarFallback>ER</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="font-bold text-lg">Emily R.</CardTitle>
-                    <p className="text-sm text-muted-foreground">Renter</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">"I used them for TV mounting and shelf installation in my new apartment. The technician was punctual, did a perfect job, and even cleaned up afterward. So impressed!"</p>
-              </CardContent>
-              <CardFooter className="flex items-center gap-1">
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-                <Star className="w-5 h-5 fill-primary text-primary" />
-              </CardFooter>
-            </Card>
-          </div>
+          <TestimonialCarousel/>
+          <TestimonialCarousel2/>
         </div>
       </section>
     </>

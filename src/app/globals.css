@@ -75,15 +75,21 @@
   }
   .footerbg{
     background-repeat: repeat-x;
-    background-image: url("../img/footer.png");
-    background-position: top;
-    background-size: cover;
+    background-image: url("../img/footer_2.png");
+    background-position: left;
+    background-size: contain;
   }
   .sectionbg{
-    background-repeat: no-repeat;
+    background-repeat: repeat-x;
     background-image: url("../img/fondo_mas_chiquita_osi_osi.png");
-    background-position: center;
-    background-size: cover;
+    background-position: left;
+    background-size: auto 100%;
+  }
+  .bodybg{
+    background-color: #daf3e7;
+  }
+  .contrastbg{
+    background-color: #00D6A8;
   }
   .btnbg{
     background-color: #321c1f;
@@ -110,5 +116,8 @@
   }
   .contrastbg{
     background-color: #00D6A8;
+  }
+  #testcarousel{
+    overflow:visible;
   }
 }
