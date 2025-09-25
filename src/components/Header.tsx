@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import logo from '../img/logo_png.png';
+import logo from '../img/icon_3.png';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
