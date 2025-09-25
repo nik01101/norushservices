@@ -1,0 +1,41 @@
+
+{
+  "galleryImages": [
+    {
+      "id": 1,
+      "src": "https://picsum.photos/seed/101/400/400",
+      "alt": "Assembled white dresser in a bedroom",
+      "hint": "furniture assembly"
+    },
+    {
+      "id": 2,
+      "src": "https://picsum.photos/seed/102/400/400",
+      "alt": "TV mounted on a brick wall",
+      "hint": "tv wall mount"
+    },
+    {
+      "id": 3,
+      "src": "https://picsum.photos/seed/103/400/400",
+      "alt": "Living room with packed moving boxes",
+      "hint": "moving boxes"
+    },
+    {
+      "id": 4,
+      "src": "https://picsum.photos/seed/104/400/400",
+      "alt": "Assembled wooden crib in a nursery",
+      "hint": "furniture assembly nursery"
+    },
+    {
+      "id": 5,
+      "src": "https://picsum.photos/seed/105/400/400",
+      "alt": "Gallery wall of framed photos mounted on a wall",
+      "hint": "gallery wall"
+    },
+    {
+      "id": 6,
+      "src": "https://picsum.photos/seed/106/400/400",
+      "alt": "Old couch being removed from a home",
+      "hint": "junk removal"
+    }
+  ]
+}

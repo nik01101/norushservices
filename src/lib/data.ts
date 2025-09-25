@@ -1,6 +1,9 @@
 
 import type { Service, Booking, TimeSlot } from './types';
 import furnitureImage from '../img/furniture.png';
+import mountingImage from '../img/mounting.png';
+import trashImage from '../img/trashremoval.png';
+import movingImage from '../img/moving.png';
 
 export const services: Service[] = [
   {
@@ -17,7 +20,7 @@ export const services: Service[] = [
     name: 'Mounting',
     description: 'Secure and professional mounting services for any wall type.',
     price: 50,
-    imageUrl: 'https://picsum.photos/seed/mounting/600/400',
+    imageUrl: mountingImage.src,
     imageHint: 'living room',
   },
   {
@@ -25,7 +28,7 @@ export const services: Service[] = [
     name: 'Trash Removal Furniture',
     description: 'Efficient removal of unwanted furniture and trash. Extra fee may apply based on weight.',
     price: 50,
-    imageUrl: 'https://picsum.photos/seed/trash/600/400',
+    imageUrl: trashImage.src,
     imageHint: 'trash furniture removal',
     extraFee: 'Extra fee depending on weight',
   },
@@ -34,7 +37,7 @@ export const services: Service[] = [
     name: 'Moving',
     description: 'Efficient and careful moving services for your home or office within the city.',
     price: 80,
-    imageUrl: 'https://picsum.photos/seed/moving/600/400',
+    imageUrl: movingImage.src,
     imageHint: 'moving boxes',
   },
 ];

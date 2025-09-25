@@ -15,7 +15,7 @@ const noto = Noto_Sans({
   subsets: ['latin'],
   weight: ['400', '700'],
   display: 'swap',
-  variable: '--font-parkinsans', // Using this variable name to avoid changing it everywhere else
+  variable: '--font-parkinsans',
 });
 
 export const metadata: Metadata = {

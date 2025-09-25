@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../img/logo_png.png';
-import rodo from '../img/rodo.jpg'
+import rodo from '../img/rodo.png'
 import { TestimonialCarousel,TestimonialCarousel2 } from './ui/testimonies';
 import { ServicesCards } from './ui/servicescards';
+import {LandingCarousel} from './ui/landingpics';
+import {SocialMedia} from './ui/socials';
 
 
 export function HomePage() {
@@ -38,17 +40,7 @@ export function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="flex justify-center items-center">
-              <Image
-                src="https://picsum.photos/seed/hero/1200/800"
-                alt="Hero"
-                width={1200}
-                height={800}
-                className="mx-auto rounded-xl object-cover w-full lg:aspect-square"
-                data-ai-hint="organized living room"
-                priority
-              />
-            </div>
+            <LandingCarousel/>
           </div>
         </div>
       </section>
@@ -88,6 +80,9 @@ export function HomePage() {
           <TestimonialCarousel/>
           <TestimonialCarousel2/>
         </div>
+      </section>
+      <section className="w-full py-12 md:py-24 lg:py-32 bodybg">
+        <SocialMedia/>
       </section>
     </>
   );
