@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { galleryImages } from '@/app/lib/placeholder-images.json';
 import { Card } from '@/components/ui/card';
@@ -24,12 +24,13 @@ export default function GalleryPage() {
   const openCarousel = (index: number) => {
     setSelectedIndex(index);
     setOpen(true);
-    setTimeout(() => {
-      if (carouselApi) {
-        carouselApi.scrollTo(index, true);
-      }
-    }, 100); 
   };
+  
+  useEffect(() => {
+    if (open && carouselApi) {
+        carouselApi.scrollTo(selectedIndex, true);
+    }
+  }, [open, carouselApi, selectedIndex]);
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -61,7 +62,7 @@ export default function GalleryPage() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="bg-transparent border-none shadow-none p-0 w-full max-w-none h-screen flex items-center justify-center">
+        <DialogContent className="bg-transparent border-none shadow-none p-0 w-full max-w-none h-screen flex items-center justify-center sm:max-w-none">
           <Carousel
             setApi={setCarouselApi}
             opts={{
@@ -73,7 +74,7 @@ export default function GalleryPage() {
             <CarouselContent className="h-full">
               {galleryImages.map((image) => (
                 <CarouselItem key={image.id} className="flex items-center justify-center p-4">
-                  <div className="relative w-full h-full max-w-6xl max-h-[80vh]">
+                  <div className="relative w-full h-[80vh] max-w-6xl">
                      <Image
                         src={image.src}
                         alt={image.alt}
@@ -94,3 +95,4 @@ export default function GalleryPage() {
     </div>
   );
 }
+
