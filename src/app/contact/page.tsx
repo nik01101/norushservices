@@ -20,7 +20,7 @@ export default function ContactPage() {
                         <Phone className="h-8 w-8 text-primary" />
                         <div>
                             <CardTitle>Call Us</CardTitle>
-                            <CardDescription>(123) 456-7890</CardDescription>
+                            <CardDescription>(929) 637-2276</CardDescription>
                         </div>
                     </CardHeader>
                 </Card>
@@ -29,7 +29,7 @@ export default function ContactPage() {
                         <Mail className="h-8 w-8 text-primary" />
                         <div>
                             <CardTitle>Email Us</CardTitle>
-                            <CardDescription>hello@norush.com</CardDescription>
+                            <CardDescription>norushnyc@gmail.com</CardDescription>
                         </div>
                     </CardHeader>
                 </Card>
