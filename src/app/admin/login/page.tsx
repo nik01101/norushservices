@@ -3,15 +3,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Package } from "lucide-react";
+import Image from 'next/image';
+import logo from '../../../img/logo_png.png';
 
 export default function AdminLoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-            <Link href="/" className="inline-flex items-center gap-2 mb-4">
-                <Package className="h-8 w-8 text-primary" />
+            <Link href="/" className="inline-flex items-center justify-center gap-2 mb-4">
+                <Image src={logo} alt="No Rush logo" width={40} height={40} />
                 <span className="font-bold text-2xl">No Rush</span>
             </Link>
             <h1 className="text-3xl font-bold font-headline">Admin Login</h1>

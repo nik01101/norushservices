@@ -4,10 +4,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, Package, LogIn } from 'lucide-react';
+import { Menu, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import logo from '../img/logo_png.png';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,7 +26,7 @@ export function Header() {
     <header className="backdrop-blur-sm top-0 z-40 sticky">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <Package className="h-6 w-6 text-primary" />
+          <Image src={logo} alt="No Rush logo" width={32} height={32} />
           <span>No Rush</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6">
@@ -60,7 +62,7 @@ export function Header() {
             <SheetContent side="right">
               <div className="flex flex-col gap-6 p-6">
                 <Link href="/" className="flex items-center gap-2 font-bold text-lg" onClick={() => setIsMenuOpen(false)}>
-                  <Package className="h-6 w-6 text-primary" />
+                  <Image src={logo} alt="No Rush logo" width={32} height={32} />
                   <span>No Rush</span>
                 </Link>
                 <nav className="grid gap-4">
