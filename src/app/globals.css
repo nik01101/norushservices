@@ -59,11 +59,11 @@
 }
 
 @font-face {
-  font-family: Akira;
+  font-family: 'Akira';
+  src: url('./AkiraExpanded.otf') format('opentype');
+  font-weight: normal;
   font-style: normal;
-  font-weight: 200 700;
   font-display: swap;
-  src: url("./AkiraExpanded.otf") format("woff2");
 }
 
 @layer base {
@@ -95,7 +95,7 @@
     background-color: #321c1f;
   }
   h1{
-    font-family: "Akira";
+    font-family: "Akira", sans-serif;
     color: black;
   }
   p{
@@ -105,7 +105,7 @@
     color: black;
   }
   h2{
-    font-family: "Akira";
+    font-family: "Akira", sans-serif;
     color: black;
   }
   .btnbg{

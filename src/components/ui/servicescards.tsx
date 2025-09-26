@@ -38,7 +38,7 @@ export function ServicesCards() {
                             </div>
                             </div>
                             <CardContent className="p-6 flex-grow flex flex-col">
-                            <h3 className="font-headline text-3xl font-[akira] uppercase text-[#00D6A8] leading-tight">{service.name}</h3>
+                            <h3 className="font-headline text-3xl font-[Akira] uppercase text-[#00D6A8] leading-tight">{service.name}</h3>
                             <p className="mt-2 text-white/90 flex-grow">{service.description}</p>
                             {service.extraFee && (
                                 <p className="mt-2 text-sm text-[#00D6A8]">{service.extraFee}</p>
