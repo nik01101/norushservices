@@ -13,15 +13,7 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from '@/components/ui/carousel';
-import galleryData from '@/app/lib/placeholder-images.json';
-
-// Dynamically import images based on the JSON data
-const images = galleryData.galleryImages.map(image => ({
-  ...image,
-  // The 'default' property holds the resolved path from the dynamic import
-  src: require(`../../${image.src.startsWith('/') ? image.src.substring(1) : image.src}`).default,
-}));
-
+import { galleryImages } from '@/lib/gallery-images';
 
 export default function GalleryPage() {
   const [open, setOpen] = useState(false);
@@ -48,7 +40,7 @@ export default function GalleryPage() {
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {images.map((image, index) => (
+        {galleryImages.map((image, index) => (
           <Card
             key={image.id}
             className="overflow-hidden rounded-lg shadow-lg group cursor-pointer"
@@ -80,7 +72,7 @@ export default function GalleryPage() {
             className="w-full h-full"
           >
             <CarouselContent className="h-full">
-              {images.map((image) => (
+              {galleryImages.map((image) => (
                 <CarouselItem key={image.id} className="flex items-center justify-center p-4">
                   <div className="relative w-full h-[80vh] max-w-6xl">
                      <Image
