@@ -22,7 +22,7 @@ const noto = Noto_Sans({
 
 const akira = localFont({
   src: '../fonts/AkiraExpanded.otf',
-  display: 'swap',
+  display: 'auto',
   variable: '--font-akira',
 });
 

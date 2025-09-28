@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -24,35 +25,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     config.module.rules.push({
-      test: /\.(png|jpe?g|gif|svg)$/i,
-      use: [
-        {
-          loader: 'file-loader',
-          options: {
-            publicPath: '/_next/static/media',
-            outputPath: 'static/media',
-            name: '[name].[hash].[ext]',
-            esModule: false,
-          },
-        },
-      ],
-    });
-
-    config.module.rules.push({
-      test: /\.(otf|woff|woff2|ttf)$/i,
-      use: [
-        {
-          loader: 'file-loader',
-          options: {
-            publicPath: '/_next/static/fonts',
-            outputPath: 'static/fonts',
-            name: '[name].[hash].[ext]',
-            esModule: false,
-          },
-        },
-      ],
+      test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
+      type: "asset/resource",
+      generator: {
+        filename: 'static/media/[name].[hash][ext]',
+      },
     });
 
     return config;
