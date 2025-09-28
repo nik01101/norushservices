@@ -1,12 +1,12 @@
 "use client"
 
-import * as React from "react"
+import {useRef}  from "react"
 import Autoplay from "embla-carousel-autoplay"
 import Image from 'next/image';
-import furnitureImage from '../../img/furniture.png';
-import mountingImage from '../../img/mounting.png';
-import trashImage from '../../img/trashremoval.png';
-import movingImage from '../../img/moving.png';
+import furnitureImage from '../../img/gallery/1.png';
+import mountingImage from '../../img/gallery/2.png';
+import trashImage from '../../img/gallery/3.png';
+import movingImage from '../../img/gallery/4.png';
 
 import {
     Carousel,
@@ -16,7 +16,7 @@ import {
 
 
   export function LandingCarousel() {
-    const plugin = React.useRef(
+    const plugin = useRef(
       Autoplay({
         delay:2000,
         playOnInit: true,
@@ -26,7 +26,7 @@ import {
 
 
     return (
-        <div className="flex justify-center items-center">
+        <div>
               <Carousel
               plugins={[plugin.current]}
               >
@@ -36,6 +36,7 @@ import {
                       src={furnitureImage}
                       alt="waawaaa"
                       className="rounded-3xl"
+                      quality="100"
                     />
                 </CarouselItem>
                 <CarouselItem>
@@ -43,6 +44,7 @@ import {
                       src={mountingImage}
                       alt="waawaaa"
                       className="rounded-3xl"
+                      quality="100"
                     />
                 </CarouselItem>
                 <CarouselItem>
@@ -50,6 +52,7 @@ import {
                       src={trashImage}
                       alt="waawaaa"
                       className="rounded-3xl"
+                      quality="100"
                     />
                 </CarouselItem>
                 <CarouselItem>
@@ -57,6 +60,7 @@ import {
                       src={movingImage}
                       alt="waawaaa"
                       className="rounded-3xl"
+                      quality="100"
                     />
                 </CarouselItem>
                 </CarouselContent>

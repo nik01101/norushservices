@@ -1,9 +1,9 @@
 
 import type { Service, Booking, TimeSlot } from './types';
-import furnitureImage from '../img/furniture.png';
-import mountingImage from '../img/mounting.png';
-import trashImage from '../img/trashremoval.png';
-import movingImage from '../img/moving.png';
+import furnitureImage from '../img/gallery/3.png';
+import mountingImage from '../img/gallery/4.png';
+import trashImage from '../img/gallery/1.png';
+import movingImage from '../img/gallery/2.png';
 
 export const services: Service[] = [
   {

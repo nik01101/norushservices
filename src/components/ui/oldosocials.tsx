@@ -69,7 +69,7 @@ export function SocialMedia() {
             </div>
         </div>
     );
-}
+
 
 
 const [centeredCardId, setCenteredCardId] = useState(socialCardsData[1].id);
@@ -209,3 +209,4 @@ useEffect(() => {
         }
     });
 }, []);
+}

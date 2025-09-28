@@ -39,7 +39,9 @@ export function HomePage() {
                 </Link>
               </div>
             </div>
-            <LandingCarousel/>
+            <div className="flex items-center justify-center">
+              <LandingCarousel/>
+            </div>
           </div>
         </div>
       </section>

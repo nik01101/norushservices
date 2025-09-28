@@ -34,6 +34,7 @@ export function ServicesCards() {
                                 fill
                                 className="object-cover"
                                 data-ai-hint={service.imageHint}
+                                quality="100"
                                 />
                             </div>
                             </div>
