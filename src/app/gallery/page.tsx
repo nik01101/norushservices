@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { galleryImages as imagePaths } from '@/app/lib/placeholder-images.json';
+import { galleryImages } from '@/app/lib/placeholder-images.json';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
@@ -15,27 +15,6 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-
-import gallery_5 from '../../img/gallery/5.png';
-import gallery_6 from '../../img/gallery/6.png';
-import gallery_7 from '../../img/gallery/7.png';
-import gallery_8 from '../../img/gallery/8.png';
-import gallery_9 from '../../img/gallery/9.png';
-import gallery_10 from '../../img/gallery/10.png';
-
-const localImages: { [key: string]: any } = {
-  gallery_5,
-  gallery_6,
-  gallery_7,
-  gallery_8,
-  gallery_9,
-  gallery_10,
-};
-
-const galleryImages = imagePaths.map(img => ({
-  ...img,
-  src: localImages[img.src] || img.src
-}));
 
 export default function GalleryPage() {
   const [open, setOpen] = useState(false);
