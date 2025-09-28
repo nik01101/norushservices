@@ -126,17 +126,6 @@ export function SocialMedia() {
 
     return (
         <div className="w-full py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center bg-[#00D6A8] relative overflow-hidden">
-             <div className="absolute inset-0 z-0">
-                <div 
-                    className="absolute top-1/4 left-1/4 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob" 
-                    style={{ animationDelay: '0s' }}
-                ></div>
-                <div 
-                    className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob" 
-                    style={{ animationDelay: '2s' }}
-                ></div>
-             </div>
-
              <div className="relative z-10 space-y-4 text-center mb-12 px-4">
                 <h2 className="text-4xl sm:text-5xl">Follow Us</h2>
                 <p className="max-w-[900px] mx-auto text-neutral-950 md:text-xl/relaxed">
