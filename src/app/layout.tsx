@@ -1,9 +1,11 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Inter, Noto_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -18,6 +20,12 @@ const noto = Noto_Sans({
   variable: '--font-parkinsans',
 });
 
+const akira = localFont({
+  src: '../fonts/AkiraExpanded.otf',
+  display: 'swap',
+  variable: '--font-akira',
+});
+
 export const metadata: Metadata = {
   title: 'No Rush',
   description: 'Furniture mounting and moving services',
@@ -29,8 +37,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full ${inter.variable} ${noto.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`h-full ${inter.variable} ${noto.variable} ${akira.variable}`} suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://picsum.photos" />
       </head>
       <body className="font-body antialiased h-full bodybg">
         <div className="flex flex-col min-h-screen">

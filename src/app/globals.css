@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -58,14 +59,6 @@
   }
 }
 
-@font-face {
-  font-family: 'Akira';
-  src: url('./AkiraExpanded.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @layer base {
   * {
     @apply border-border;
@@ -95,7 +88,7 @@
     background-color: #321c1f;
   }
   h1{
-    font-family: "Akira", sans-serif;
+    font-family: var(--font-akira), sans-serif;
     color: black;
   }
   p{
@@ -105,7 +98,7 @@
     color: black;
   }
   h2{
-    font-family: "Akira", sans-serif;
+    font-family: var(--font-akira), sans-serif;
     color: black;
   }
   .btnbg{

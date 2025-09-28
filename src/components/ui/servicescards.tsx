@@ -6,9 +6,9 @@ import { services } from '@/lib/data';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Service } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export function ServicesCards() {
 
@@ -25,7 +25,7 @@ export function ServicesCards() {
             <div className="container mx-auto px-8 md:px-6 py-9">
                     <div className="grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4 justify-center">
                         {services.map((service: Service) => (
-                        <Card key={service.id} className="bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
+                        <Card key={service.id} className="mx-auto bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
                             <div className="p-2">
                             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ">
                                 <Image
@@ -38,7 +38,7 @@ export function ServicesCards() {
                             </div>
                             </div>
                             <CardContent className="p-6 flex-grow flex flex-col">
-                            <h3 className="font-headline text-3xl font-[Akira] uppercase text-[#00D6A8] leading-tight">{service.name}</h3>
+                            <h3 className="font-headline text-3xl font-[Akira] uppercase text-[white] leading-tight">{service.name}</h3>
                             <p className="mt-2 text-white/90 flex-grow">{service.description}</p>
                             {service.extraFee && (
                                 <p className="mt-2 text-sm text-[#00D6A8]">{service.extraFee}</p>

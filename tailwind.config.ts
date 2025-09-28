@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['var(--font-inter)', 'sans-serif'],
-        headline: ['Akira', 'sans-serif'],
+        headline: ['var(--font-akira)', 'sans-serif'],
         code: ['monospace'],
         parkinsans: ['var(--font-parkinsans)', 'sans-serif'],
         podium: ['podium-soft-variable', 'sans-serif'],
