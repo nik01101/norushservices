@@ -35,7 +35,7 @@ import {
                     <Image
                       src={furnitureImage}
                       alt="waawaaa"
-                      className="rounded-3xl"
+                      className="rounded-3xl mx-auto"
                       quality="100"
                     />
                 </CarouselItem>
@@ -43,7 +43,7 @@ import {
                     <Image
                       src={mountingImage}
                       alt="waawaaa"
-                      className="rounded-3xl"
+                      className="rounded-3xl mx-auto"
                       quality="100"
                     />
                 </CarouselItem>
@@ -51,7 +51,7 @@ import {
                     <Image
                       src={trashImage}
                       alt="waawaaa"
-                      className="rounded-3xl"
+                      className="rounded-3xl mx-auto"
                       quality="100"
                     />
                 </CarouselItem>
@@ -59,7 +59,7 @@ import {
                     <Image
                       src={movingImage}
                       alt="waawaaa"
-                      className="rounded-3xl"
+                      className="rounded-3xl mx-auto"
                       quality="100"
                     />
                 </CarouselItem>
