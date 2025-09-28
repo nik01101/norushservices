@@ -13,20 +13,15 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from '@/components/ui/carousel';
+import galleryData from '@/app/lib/placeholder-images.json';
 
-// Use require.context to dynamically import all images from the gallery folder at build time.
-const imageContext = require.context('../../img/gallery', false, /\.(png|jpe?g|svg)$/);
+// Dynamically import images based on the JSON data
+const images = galleryData.galleryImages.map(image => ({
+  ...image,
+  // The 'default' property holds the resolved path from the dynamic import
+  src: require(`../../${image.src.startsWith('/') ? image.src.substring(1) : image.src}`).default,
+}));
 
-const galleryImages = imageContext.keys().map((key, index) => {
-  const src = imageContext(key);
-  const alt = `Gallery image ${index + 1}`; // Generate a generic alt tag
-  return {
-    id: index + 1,
-    src: src.default, // The resolved path to the image
-    alt: alt,
-    hint: 'gallery image', // Generic hint
-  };
-});
 
 export default function GalleryPage() {
   const [open, setOpen] = useState(false);
@@ -53,7 +48,7 @@ export default function GalleryPage() {
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {galleryImages.map((image, index) => (
+        {images.map((image, index) => (
           <Card
             key={image.id}
             className="overflow-hidden rounded-lg shadow-lg group cursor-pointer"
@@ -85,7 +80,7 @@ export default function GalleryPage() {
             className="w-full h-full"
           >
             <CarouselContent className="h-full">
-              {galleryImages.map((image) => (
+              {images.map((image) => (
                 <CarouselItem key={image.id} className="flex items-center justify-center p-4">
                   <div className="relative w-full h-[80vh] max-w-6xl">
                      <Image
