@@ -40,6 +40,21 @@ const nextConfig: NextConfig = {
       ],
     });
 
+    config.module.rules.push({
+      test: /\.(otf|woff|woff2|ttf)$/i,
+      use: [
+        {
+          loader: 'file-loader',
+          options: {
+            publicPath: '/_next/static/fonts',
+            outputPath: 'static/fonts',
+            name: '[name].[hash].[ext]',
+            esModule: false,
+          },
+        },
+      ],
+    });
+
     return config;
   }
 };
