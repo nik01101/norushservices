@@ -30,7 +30,7 @@ import {
               <Carousel
               plugins={[plugin.current]}
               >
-                <CarouselContent>
+                <CarouselContent className="gap-4">
                 <CarouselItem>
                     <Image
                       src={furnitureImage}
