@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { galleryImages } from '@/app/lib/placeholder-images.json';
+import { galleryImages as imageManifest } from '@/app/lib/placeholder-images.json';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
@@ -14,7 +14,17 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from '@/components/ui/carousel';
-import { cn } from '@/lib/utils';
+
+// Dynamically import all images from the gallery folder
+const imageContext = require.context('../../img/gallery', false, /\.(png|jpe?g|svg)$/);
+const galleryImages = imageManifest.map(image => {
+    const imageName = image.src.split('/').pop();
+    return {
+        ...image,
+        src: imageContext(`./${imageName}`).default,
+    };
+});
+
 
 export default function GalleryPage() {
   const [open, setOpen] = useState(false);
@@ -55,6 +65,7 @@ export default function GalleryPage() {
                 className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:brightness-90"
                 data-ai-hint={image.hint}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                placeholder="blur"
               />
             </div>
           </Card>
@@ -82,6 +93,7 @@ export default function GalleryPage() {
                         className="object-contain"
                         data-ai-hint={image.hint}
                         sizes="100vw"
+                        placeholder="blur"
                       />
                   </div>
                 </CarouselItem>
