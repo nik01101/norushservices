@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { galleryImages as imageManifest } from '@/app/lib/placeholder-images.json';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
@@ -15,16 +14,19 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel';
 
-// Dynamically import all images from the gallery folder
+// Use require.context to dynamically import all images from the gallery folder at build time.
 const imageContext = require.context('../../img/gallery', false, /\.(png|jpe?g|svg)$/);
-const galleryImages = imageManifest.map(image => {
-    const imageName = image.src.split('/').pop();
-    return {
-        ...image,
-        src: imageContext(`./${imageName}`).default,
-    };
-});
 
+const galleryImages = imageContext.keys().map((key, index) => {
+  const src = imageContext(key);
+  const alt = `Gallery image ${index + 1}`; // Generate a generic alt tag
+  return {
+    id: index + 1,
+    src: src.default, // The resolved path to the image
+    alt: alt,
+    hint: 'gallery image', // Generic hint
+  };
+});
 
 export default function GalleryPage() {
   const [open, setOpen] = useState(false);
