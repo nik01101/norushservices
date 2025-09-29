@@ -9,7 +9,7 @@ import {
   boolean,
   date,
 } from 'drizzle-orm/pg-core';
-import {createConnector, pgDB} from '@firebase/data-connect';
+import {createConnector, pgDB} from '@firebase/data-connect/connector';
 
 export const db = pgDB();
 

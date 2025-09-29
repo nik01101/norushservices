@@ -1,7 +1,6 @@
 
 'use server';
 import {db, Services, Bookings, TimeSlots, DisabledDates, Users} from '../schema/schema';
-import {FQL} from '@firebase/data-connect';
 
 export const getServices = FQL.createQuery(
   'getServices',
