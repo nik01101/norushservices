@@ -165,7 +165,7 @@ export default function AdminDashboard() {
     setBookings(currentBookings =>
         currentBookings.map(b =>
             b.bookingId === reschedulingBooking.bookingId
-                ? { ...b, bookingDate: newDate, bookingTime: newTime, status: 'confirmed' }
+                ? { ...b, bookingDate: newDate.toString(), bookingTime: newTime, status: 'confirmed' }
                 : b
         )
     );
@@ -350,3 +350,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+

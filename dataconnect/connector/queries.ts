@@ -1,11 +1,11 @@
 
 'use server';
 import {db, Services, Bookings, TimeSlots, DisabledDates, Users} from '../schema/schema';
-import {FQL, query} from '@firebase/data-connect';
+import {FQL} from '@firebase/data-connect';
 
 export const getServices = FQL.createQuery(
   'getServices',
-  query({
+  () => FQL.query({
     services: async () => await db.select(Services),
   })
 );
@@ -13,7 +13,7 @@ export const getServices = FQL.createQuery(
 
 export const getBookings = FQL.createQuery(
   'getBookings',
-  query({
+  () => FQL.query({
     bookings: async () => await db.select(Bookings),
     users: async ({bookings}) =>
       await db
@@ -29,15 +29,17 @@ export const getBookings = FQL.createQuery(
 
 export const getServiceById = FQL.createQuery(
     'getServiceById',
-    async ({serviceId}: {serviceId: string}) =>
-    await db.select(Services).where('serviceId', '=', serviceId).first()
+    async ({serviceId}: {serviceId: string}) => ({
+        service: await db.select(Services).where('serviceId', '=', serviceId).first()
+    })
 );
 
 
 export const getAvailability = FQL.createQuery(
   'getAvailability',
-  query({
+  () => FQL.query({
     timeSlots: async () => await db.select(TimeSlots).orderBy('time', 'asc'),
     disabledDates: async () => await db.select(DisabledDates),
   })
 );
+

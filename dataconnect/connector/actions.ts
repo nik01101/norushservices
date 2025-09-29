@@ -12,6 +12,7 @@ import {
 import {batch, fn, FQL} from '@firebase/data-connect';
 
 export const createBooking = FQL.define(
+  'createBooking',
   async ({
     customerName,
     customerEmail,
@@ -74,7 +75,7 @@ export const createBooking = FQL.define(
 );
 
 
-export const toggleTimeSlot = FQL.define(async ({time, available}: {time: string; available: boolean}) => {
+export const toggleTimeSlot = FQL.define('toggleTimeSlot', async ({time, available}: {time: string; available: boolean}) => {
   return await db
     .update(TimeSlots)
     .set({available})
@@ -83,7 +84,7 @@ export const toggleTimeSlot = FQL.define(async ({time, available}: {time: string
 });
 
 
-export const updateBookingStatus = FQL.define(async ({bookingId, status}: {bookingId: number; status: BookingStatus}) => {
+export const updateBookingStatus = FQL.define('updateBookingStatus', async ({bookingId, status}: {bookingId: number; status: BookingStatus}) => {
   return await db
     .update(Bookings)
     .set({status})
@@ -93,6 +94,7 @@ export const updateBookingStatus = FQL.define(async ({bookingId, status}: {booki
 
 
 export const rescheduleBooking = FQL.define(
+  'rescheduleBooking',
   async ({bookingId, bookingDate, bookingTime}: {bookingId: number, bookingDate: string, bookingTime: string}) => {
     return await db
       .update(Bookings)
@@ -107,7 +109,7 @@ export const rescheduleBooking = FQL.define(
 );
 
 
-export const toggleDisabledDate = FQL.define(async ({date}: {date: string}) => {
+export const toggleDisabledDate = FQL.define('toggleDisabledDate', async ({date}: {date: string}) => {
   return await db.run(async (tx) => {
     const existingDate = await tx
       .select(DisabledDates)
@@ -125,3 +127,4 @@ export const toggleDisabledDate = FQL.define(async ({date}: {date: string}) => {
     }
   });
 });
+
