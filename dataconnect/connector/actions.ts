@@ -11,7 +11,7 @@ import {
 } from '../schema/schema';
 import {batch, fn, FQL} from '@firebase/data-connect';
 
-const createBookingAction = FQL.define(
+export const createBooking = FQL.define(
   async ({
     customerName,
     customerEmail,
@@ -72,27 +72,27 @@ const createBookingAction = FQL.define(
     });
   }
 );
-export const createBooking = createBookingAction;
 
-const toggleTimeSlotAction = FQL.define(async ({time, available}: {time: string; available: boolean}) => {
+
+export const toggleTimeSlot = FQL.define(async ({time, available}: {time: string; available: boolean}) => {
   return await db
     .update(TimeSlots)
     .set({available})
     .where('time', '=', time)
     .run();
 });
-export const toggleTimeSlot = toggleTimeSlotAction;
 
-const updateBookingStatusAction = FQL.define(async ({bookingId, status}: {bookingId: number; status: BookingStatus}) => {
+
+export const updateBookingStatus = FQL.define(async ({bookingId, status}: {bookingId: number; status: BookingStatus}) => {
   return await db
     .update(Bookings)
     .set({status})
     .where('bookingId', '=', bookingId)
     .run();
 });
-export const updateBookingStatus = updateBookingStatusAction;
 
-const rescheduleBookingAction = FQL.define(
+
+export const rescheduleBooking = FQL.define(
   async ({bookingId, bookingDate, bookingTime}: {bookingId: number, bookingDate: string, bookingTime: string}) => {
     return await db
       .update(Bookings)
@@ -105,9 +105,9 @@ const rescheduleBookingAction = FQL.define(
       .run();
   }
 );
-export const rescheduleBooking = rescheduleBookingAction;
 
-const toggleDisabledDateAction = FQL.define(async ({date}: {date: string}) => {
+
+export const toggleDisabledDate = FQL.define(async ({date}: {date: string}) => {
   return await db.run(async (tx) => {
     const existingDate = await tx
       .select(DisabledDates)
@@ -125,5 +125,3 @@ const toggleDisabledDateAction = FQL.define(async ({date}: {date: string}) => {
     }
   });
 });
-
-export const toggleDisabledDate = toggleDisabledDateAction;
