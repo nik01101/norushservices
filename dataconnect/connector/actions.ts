@@ -9,7 +9,7 @@ import {
   DisabledDates,
   TimeSlots,
 } from '../schema/schema';
-import {batch, fn, FQL, query, Query, resolved} from '@google/dataconnect';
+import {batch, fn, FQL} from '@firebase/data-connect';
 
 const createBookingAction = FQL.define(
   async ({
@@ -20,6 +20,14 @@ const createBookingAction = FQL.define(
     serviceId,
     bookingDate,
     bookingTime,
+  }: {
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    customerAddress: string;
+    serviceId: string;
+    bookingDate: string;
+    bookingTime: string;
   }) => {
     return await db.run(async (tx) => {
       let user = await tx.select(Users).where('email', '=', customerEmail).first();
@@ -66,7 +74,7 @@ const createBookingAction = FQL.define(
 );
 export const createBooking = createBookingAction;
 
-const toggleTimeSlotAction = FQL.define(async ({time, available}) => {
+const toggleTimeSlotAction = FQL.define(async ({time, available}: {time: string; available: boolean}) => {
   return await db
     .update(TimeSlots)
     .set({available})
@@ -75,7 +83,7 @@ const toggleTimeSlotAction = FQL.define(async ({time, available}) => {
 });
 export const toggleTimeSlot = toggleTimeSlotAction;
 
-const updateBookingStatusAction = FQL.define(async ({bookingId, status}) => {
+const updateBookingStatusAction = FQL.define(async ({bookingId, status}: {bookingId: number; status: BookingStatus}) => {
   return await db
     .update(Bookings)
     .set({status})
@@ -85,7 +93,7 @@ const updateBookingStatusAction = FQL.define(async ({bookingId, status}) => {
 export const updateBookingStatus = updateBookingStatusAction;
 
 const rescheduleBookingAction = FQL.define(
-  async ({bookingId, bookingDate, bookingTime}) => {
+  async ({bookingId, bookingDate, bookingTime}: {bookingId: number, bookingDate: string, bookingTime: string}) => {
     return await db
       .update(Bookings)
       .set({
@@ -99,7 +107,7 @@ const rescheduleBookingAction = FQL.define(
 );
 export const rescheduleBooking = rescheduleBookingAction;
 
-const toggleDisabledDateAction = FQL.define(async ({date}) => {
+const toggleDisabledDateAction = FQL.define(async ({date}: {date: string}) => {
   return await db.run(async (tx) => {
     const existingDate = await tx
       .select(DisabledDates)

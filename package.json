@@ -13,7 +13,7 @@
     "db:seed": "tsx dataconnect/seed.ts"
   },
   "dependencies": {
-    "@google/dataconnect": "^0.3.0",
+    "@firebase/data-connect": "^0.3.0",
     "@genkit-ai/googleai": "^1.14.1",
     "@genkit-ai/next": "^1.14.1",
     "@hookform/resolvers": "^4.1.3",
