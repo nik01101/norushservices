@@ -1,6 +1,6 @@
 
 import '../.././globals.css';
-import { services, timeSlots, disabledDates } from '@/lib/data';
+import { getServiceById, getAvailability } from '@/../dataconnect/connector/queries';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
@@ -8,12 +8,22 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { BookingForm } from '@/components/BookingForm';
 
-export default function BookingPage({ params }: { params: { serviceId: string } }) {
-  const service = services.find((s) => s.id === params.serviceId);
+export default async function BookingPage({ params }: { params: { serviceId: string } }) {
+  const { data: service, error: serviceError } = await getServiceById({ serviceId: params.serviceId });
+  const { data: availability, error: availabilityError } = await getAvailability({});
+
+  if (serviceError || availabilityError) {
+    console.error(serviceError || availabilityError);
+    // You could render a specific error page here
+    return <p>Error loading booking information.</p>;
+  }
 
   if (!service) {
     notFound();
   }
+
+  const timeSlots = availability?.timeSlots ?? [];
+  const disabledDates = availability?.disabledDates.map(d => new Date(d.date)) ?? [];
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">

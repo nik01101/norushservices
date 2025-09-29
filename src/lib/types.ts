@@ -1,5 +1,6 @@
 export type Service = {
-  id: string;
+  id: number;
+  serviceId: string;
   name: string;
   description: string;
   price: number;
@@ -8,19 +9,31 @@ export type Service = {
   extraFee?: string;
 };
 
+export type User = {
+    userId: number;
+    name: string;
+    email: string;
+    phone: string | null;
+    address: string | null;
+}
+
 export type Booking = {
-  id: string;
-  serviceId: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  customerAddress: string;
-  bookingDate: Date;
+  bookingId: number;
+  userId: number;
+  serviceId: number;
+  bookingDate: string; // ISO date string
   bookingTime: string;
   status: 'pending' | 'confirmed' | 'cancelled';
+  createdAt: string; // ISO datetime string
 };
 
 export type TimeSlot = {
+  id: number;
   time: string;
   available: boolean;
 };
+
+export type DisabledDate = {
+    id: number;
+    date: string; // ISO date string
+}

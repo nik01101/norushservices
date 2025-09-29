@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { createBooking } from '@/../dataconnect/connector/actions';
+import { format } from 'date-fns';
 
 interface BookingFormProps {
     service: Service;
@@ -43,17 +45,19 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
     setIsLoading(true);
 
     try {
-        console.log('Booking submitted:', {
-            serviceId: service?.id,
+        const { error } = await createBooking({
+            serviceId: service.serviceId,
             customerName: name,
             customerEmail: email,
             customerPhone: phone,
             customerAddress: address,
-            bookingDate: date,
+            bookingDate: format(date, 'yyyy-MM-dd'),
             bookingTime: selectedTime,
         });
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        if (error) {
+            throw new Error(error.message);
+        }
 
         toast({
             title: 'Booking Submitted!',
@@ -64,6 +68,7 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
         
         router.push('/booking-confirmation');
     } catch (error) {
+        console.error(error);
         toast({
             title: 'Booking Failed',
             description: 'Something went wrong. Please try again.',

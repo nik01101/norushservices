@@ -1,8 +1,5 @@
 
-"use client"
-
-import * as React from "react"
-import { services } from '@/lib/data';
+import { getServices } from '@/../dataconnect/connector/queries';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Service } from '@/lib/types';
@@ -10,7 +7,13 @@ import { Card, CardContent} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
-export function ServicesCards() {
+export async function ServicesCards() {
+    const { data, error } = await getServices({});
+    if (error) {
+        console.error(error);
+        return <p>Error loading services.</p>
+    }
+    const services = data?.services ?? [];
 
     return (
         <section id="services" className="w-full py-12 md:py-24 lg:py-32 sectionbg relative">
@@ -25,7 +28,7 @@ export function ServicesCards() {
             <div className="container mx-auto px-8 md:px-6 py-9">
                     <div className="grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4 justify-center">
                         {services.map((service: Service) => (
-                        <Card key={service.id} className="mx-auto bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
+                        <Card key={service.serviceId} className="mx-auto bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
                             <div className="p-2">
                             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ">
                                 <Image
@@ -47,7 +50,7 @@ export function ServicesCards() {
                             <div className="mt-6 flex justify-between items-end">
                                 <p className="text-4xl font-bold text-[#00D6A8]">${service.price}/hr</p>
                                 <Button asChild className="bg-[#00D6A8] text-black rounded-lg hover:bg-[#00b38f]">
-                                <Link href={`/book/${service.id}`}>
+                                <Link href={`/book/${service.serviceId}`}>
                                     Book Now <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                                 </Button>

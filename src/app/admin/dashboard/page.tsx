@@ -2,8 +2,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { bookings as initialBookings, services, timeSlots as initialTimeSlots, disabledDates as initialDisabledDates } from '@/lib/data';
-import type { Booking, TimeSlot } from '@/lib/types';
+import {
+  createBooking,
+  toggleDisabledDate,
+  toggleTimeSlot,
+  updateBookingStatus,
+  rescheduleBooking
+} from '@/../dataconnect/connector/actions';
+import { getBookings, getServices, getAvailability } from '@/../dataconnect/connector/queries';
+import type { Booking, TimeSlot, Service, User } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -18,55 +25,129 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
 
+type EnrichedBooking = Booking & {
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string | null;
+    serviceName: string;
+};
+
 export default function AdminDashboard() {
-  const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-  const [disabledDates, setDisabledDates] = useState<Date[]>(initialDisabledDates);
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(initialTimeSlots);
+  const [bookings, setBookings] = useState<EnrichedBooking[]>([]);
+  const [disabledDates, setDisabledDates] = useState<Date[]>([]);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
-  const [reschedulingBooking, setReschedulingBooking] = useState<Booking | null>(null);
+  const [reschedulingBooking, setReschedulingBooking] = useState<EnrichedBooking | null>(null);
   const [newDate, setNewDate] = useState<Date | undefined>(undefined);
   const [newTime, setNewTime] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     setIsClient(true);
+    fetchData();
   }, []);
 
-  const getServiceName = (serviceId: string) => {
-    return services.find(s => s.id === serviceId)?.name || 'Unknown Service';
+  const fetchData = async () => {
+    const [{ data: bookingsData, error: bookingsError }, { data: availabilityData, error: availabilityError }, {data: servicesData, error: servicesError}] = await Promise.all([
+      getBookings({}),
+      getAvailability({}),
+      getServices({})
+    ]);
+
+    if (bookingsError || availabilityError || servicesError) {
+      console.error(bookingsError || availabilityError || servicesError);
+      toast({ title: 'Error', description: 'Failed to load dashboard data.', variant: 'destructive' });
+      return;
+    }
+
+    if (servicesData?.services) {
+        setServices(servicesData.services);
+    }
+    
+    if (bookingsData) {
+        const enrichedBookings = bookingsData.bookings.map(booking => {
+            const user = bookingsData.users.find(u => u.userId === booking.userId);
+            const service = servicesData?.services?.find(s => s.id === booking.serviceId);
+            return {
+                ...booking,
+                customerName: user?.name ?? 'N/A',
+                customerEmail: user?.email ?? 'N/A',
+                customerPhone: user?.phone ?? 'N/A',
+                serviceName: service?.name ?? 'Unknown Service'
+            };
+        });
+        setBookings(enrichedBookings);
+    }
+
+    if (availabilityData) {
+      setDisabledDates(availabilityData.disabledDates.map(d => new Date(d.date)));
+      setTimeSlots(availabilityData.timeSlots);
+    }
   };
 
-  const handleStatusChange = (bookingId: string, status: 'confirmed' | 'cancelled') => {
+
+  const handleStatusChange = async (bookingId: number, status: 'confirmed' | 'cancelled') => {
+    const originalBookings = bookings;
     setBookings(currentBookings =>
-      currentBookings.map(b => (b.id === bookingId ? { ...b, status } : b))
+      currentBookings.map(b => (b.bookingId === bookingId ? { ...b, status } : b))
     );
-    toast({
-      title: 'Booking Updated',
-      description: `Booking has been ${status}.`,
-      className: 'bg-accent text-accent-foreground',
-    });
+    
+    const { error } = await updateBookingStatus({ bookingId, status });
+    if (error) {
+        setBookings(originalBookings);
+        toast({ title: 'Error', description: `Failed to update booking status.`, variant: 'destructive'});
+    } else {
+        toast({
+            title: 'Booking Updated',
+            description: `Booking has been ${status}.`,
+            className: 'bg-accent text-accent-foreground',
+        });
+    }
   };
   
-  const handleDateToggle = (date: Date | undefined) => {
+  const handleDateToggle = async (date: Date | undefined) => {
     if (!date) return;
+    
+    const dateString = date.toISOString().split('T')[0];
+    const originalDisabledDates = disabledDates;
+
     setDisabledDates(prev => {
-        const dateString = date.toDateString();
-        const isAlreadyDisabled = prev.some(d => d.toDateString() === dateString);
+        const prevDateStrings = prev.map(d => d.toDateString());
+        const isAlreadyDisabled = prevDateStrings.includes(date.toDateString());
         if (isAlreadyDisabled) {
-            return prev.filter(d => d.toDateString() !== dateString);
+            return prev.filter(d => d.toDateString() !== date.toDateString());
         } else {
             return [...prev, date];
         }
     });
+
+    const { error } = await toggleDisabledDate({ date: dateString });
+
+    if (error) {
+        setDisabledDates(originalDisabledDates);
+        toast({ title: 'Error', description: 'Failed to update disabled date.', variant: 'destructive'});
+    }
   };
 
-  const toggleTimeSlot = (time: string) => {
+  const handleToggleTimeSlot = async (time: string) => {
+    const originalTimeSlots = timeSlots;
+    const slotToToggle = timeSlots.find(slot => slot.time === time);
+    if (!slotToToggle) return;
+
     setTimeSlots(prev => prev.map(slot => slot.time === time ? {...slot, available: !slot.available} : slot));
+
+    const { error } = await toggleTimeSlot({ time, available: !slotToToggle.available });
+
+    if (error) {
+        setTimeSlots(originalTimeSlots);
+        toast({ title: 'Error', description: 'Failed to update time slot.', variant: 'destructive' });
+    }
   };
   
-  const openRescheduleDialog = (booking: Booking) => {
+  const openRescheduleDialog = (booking: EnrichedBooking) => {
     setReschedulingBooking(booking);
-    setNewDate(booking.bookingDate);
+    setNewDate(new Date(booking.bookingDate));
     setNewTime(booking.bookingTime);
   };
   
@@ -76,22 +157,36 @@ export default function AdminDashboard() {
     setNewTime(undefined);
   }
 
-  const handleReschedule = () => {
+  const handleReschedule = async () => {
     if (!reschedulingBooking || !newDate || !newTime) return;
 
+    const originalBookings = bookings;
+    
     setBookings(currentBookings =>
         currentBookings.map(b =>
-            b.id === reschedulingBooking.id
+            b.bookingId === reschedulingBooking.bookingId
                 ? { ...b, bookingDate: newDate, bookingTime: newTime, status: 'confirmed' }
                 : b
         )
     );
 
-    toast({
-        title: 'Booking Rescheduled',
-        description: 'The booking has been updated with the new date and time.',
-        className: 'bg-accent text-accent-foreground',
+    const { error } = await rescheduleBooking({
+        bookingId: reschedulingBooking.bookingId,
+        bookingDate: newDate.toISOString().split('T')[0],
+        bookingTime: newTime
     });
+
+    if (error) {
+        setBookings(originalBookings);
+        toast({ title: 'Error', description: 'Failed to reschedule booking.', variant: 'destructive'});
+    } else {
+        toast({
+            title: 'Booking Rescheduled',
+            description: 'The booking has been updated with the new date and time.',
+            className: 'bg-accent text-accent-foreground',
+        });
+    }
+
 
     closeRescheduleDialog();
   };
@@ -128,13 +223,13 @@ export default function AdminDashboard() {
                     </TableHeader>
                     <TableBody>
                     {bookings.map((booking) => (
-                        <TableRow key={booking.id}>
+                        <TableRow key={booking.bookingId}>
                         <TableCell>
                             <div className="font-medium">{booking.customerName}</div>
                             <div className="text-sm text-muted-foreground">{booking.customerEmail}</div>
                             <div className="text-sm text-muted-foreground">{booking.customerPhone}</div>
                         </TableCell>
-                        <TableCell>{getServiceName(booking.serviceId)}</TableCell>
+                        <TableCell>{booking.serviceName}</TableCell>
                         <TableCell className="hidden md:table-cell">
                           {isClient ? format(new Date(booking.bookingDate), 'MM/dd/yyyy') : ''} at {booking.bookingTime}
                         </TableCell>
@@ -153,14 +248,14 @@ export default function AdminDashboard() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'confirmed')}>
+                                <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'confirmed')}>
                                 <Check className="mr-2 h-4 w-4" /> Confirm
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => openRescheduleDialog(booking)}>
                                   <CalendarIcon className="mr-2 h-4 w-4" /> Reschedule
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'cancelled')} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'cancelled')} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
                                 <X className="mr-2 h-4 w-4" /> Cancel
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -200,7 +295,7 @@ export default function AdminDashboard() {
                             <Switch
                                 id={`time-${slot.time}`}
                                 checked={slot.available}
-                                onCheckedChange={() => toggleTimeSlot(slot.time)}
+                                onCheckedChange={() => handleToggleTimeSlot(slot.time)}
                             />
                         </div>
                     ))}
