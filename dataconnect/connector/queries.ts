@@ -5,16 +5,16 @@ import {FQL} from '@firebase/data-connect';
 
 export const getServices = FQL.createQuery(
   'getServices',
-  () => FQL.query({
-    services: async () => await db.select(Services),
+  async () => ({
+    services: await db.select(Services),
   })
 );
 
 
 export const getBookings = FQL.createQuery(
   'getBookings',
-  () => FQL.query({
-    bookings: async () => await db.select(Bookings),
+  async () => FQL.query({
+    bookings: await db.select(Bookings),
     users: async ({bookings}) =>
       await db
         .select(Users)
@@ -37,9 +37,8 @@ export const getServiceById = FQL.createQuery(
 
 export const getAvailability = FQL.createQuery(
   'getAvailability',
-  () => FQL.query({
-    timeSlots: async () => await db.select(TimeSlots).orderBy('time', 'asc'),
-    disabledDates: async () => await db.select(DisabledDates),
+  async () => ({
+    timeSlots: await db.select(TimeSlots).orderBy('time', 'asc'),
+    disabledDates: await db.select(DisabledDates),
   })
 );
-

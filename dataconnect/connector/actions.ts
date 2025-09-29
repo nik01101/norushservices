@@ -127,4 +127,3 @@ export const toggleDisabledDate = FQL.define('toggleDisabledDate', async ({date}
     }
   });
 });
-
