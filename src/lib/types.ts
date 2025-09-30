@@ -1,10 +1,13 @@
+
+import { StaticImageData } from 'next/image';
+
 export type Service = {
   id: number;
   serviceId: string;
   name: string;
   description: string;
   price: number;
-  imageUrl: string;
+  imageUrl: string | StaticImageData;
   imageHint: string;
   extraFee?: string;
 };

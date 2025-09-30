@@ -5,16 +5,20 @@ import type { Service } from '@/lib/types';
 import { Card, CardContent} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import furnitureImage from '../../img/landing/1.png';
+import mountingImage from '../../img/landing/2.png';
+import trashImage from '../../img/landing/3.png';
+import movingImage from '../../img/landing/4.png';
 
-const placeholderServices: Service[] = [
-    { id: 1, serviceId: 'furniture-assembly', name: 'Furniture Assembly', description: 'Expert assembly for your flat-pack furniture. Quick, reliable, and hassle-free.', price: 50, imageUrl: '/landing/1.png', imageHint: 'furniture assembly', extraFee: 'The minimum service time is 2 hours.'},
-    { id: 2, serviceId: 'tv-mounting', name: 'Mounting', description: 'Secure and professional mounting services for any wall type.', price: 50, imageUrl: '/landing/2.png', imageHint: 'living room'},
-    { id: 3, serviceId: 'trash-removal', name: 'Trash Removal Furniture', description: 'Efficient removal of unwanted furniture and trash. Extra fee may apply based on weight.', price: 50, imageUrl: '/landing/3.png', imageHint: 'trash furniture removal', extraFee: 'Extra fee depending on weight'},
-    { id: 4, serviceId: 'local-moving', name: 'Moving', description: 'Efficient and careful moving services for your home or office within the city.', price: 80, imageUrl: '/landing/4.png', imageHint: 'moving boxes'},
+const localServices = [
+    { id: 1, serviceId: 'furniture-assembly', name: 'Furniture Assembly', description: 'Expert assembly for your flat-pack furniture. Quick, reliable, and hassle-free.', price: 50, imageUrl: furnitureImage, imageHint: 'furniture assembly', extraFee: 'The minimum service time is 2 hours.'},
+    { id: 2, serviceId: 'tv-mounting', name: 'Mounting', description: 'Secure and professional mounting services for any wall type.', price: 50, imageUrl: mountingImage, imageHint: 'living room'},
+    { id: 3, serviceId: 'trash-removal', name: 'Trash Removal Furniture', description: 'Efficient removal of unwanted furniture and trash. Extra fee may apply based on weight.', price: 50, imageUrl: trashImage, imageHint: 'trash furniture removal', extraFee: 'Extra fee depending on weight'},
+    { id: 4, serviceId: 'local-moving', name: 'Moving', description: 'Efficient and careful moving services for your home or office within the city.', price: 80, imageUrl: movingImage, imageHint: 'moving boxes'},
 ];
 
-export async function ServicesCards() {
-    const services = placeholderServices;
+export function ServicesCards() {
+    const services = localServices;
 
     return (
         <section id="services" className="w-full py-12 md:py-24 lg:py-32 sectionbg relative">
@@ -28,7 +32,7 @@ export async function ServicesCards() {
             </div>
             <div className="container mx-auto px-8 md:px-6 py-9">
                     <div className="grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4 justify-center">
-                        {services.map((service: Service) => (
+                        {services.map((service) => (
                         <Card key={service.serviceId} className="mx-auto bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
                             <div className="p-2">
                             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ">
@@ -39,6 +43,7 @@ export async function ServicesCards() {
                                 className="object-cover"
                                 data-ai-hint={service.imageHint}
                                 quality="100"
+                                placeholder="blur"
                                 />
                             </div>
                             </div>

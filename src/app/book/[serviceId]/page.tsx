@@ -7,12 +7,17 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { BookingForm } from '@/components/BookingForm';
 import type { Service } from '@/lib/types';
+import furnitureImage from '@/img/landing/1.png';
+import mountingImage from '@/img/landing/2.png';
+import trashImage from '@/img/landing/3.png';
+import movingImage from '@/img/landing/4.png';
 
-const placeholderServices: Service[] = [
-    { id: 1, serviceId: 'furniture-assembly', name: 'Furniture Assembly', description: 'Expert assembly for your flat-pack furniture. Quick, reliable, and hassle-free.', price: 50, imageUrl: '/landing/1.png', imageHint: 'furniture assembly', extraFee: 'The minimum service time is 2 hours.'},
-    { id: 2, serviceId: 'tv-mounting', name: 'Mounting', description: 'Secure and professional mounting services for any wall type.', price: 50, imageUrl: '/landing/2.png', imageHint: 'living room'},
-    { id: 3, serviceId: 'trash-removal', name: 'Trash Removal Furniture', description: 'Efficient removal of unwanted furniture and trash. Extra fee may apply based on weight.', price: 50, imageUrl: '/landing/3.png', imageHint: 'trash furniture removal', extraFee: 'Extra fee depending on weight'},
-    { id: 4, serviceId: 'local-moving', name: 'Moving', description: 'Efficient and careful moving services for your home or office within the city.', price: 80, imageUrl: '/landing/4.png', imageHint: 'moving boxes'},
+
+const placeholderServices: Omit<Service, 'imageUrl'> & { imageUrl: any }[] = [
+    { id: 1, serviceId: 'furniture-assembly', name: 'Furniture Assembly', description: 'Expert assembly for your flat-pack furniture. Quick, reliable, and hassle-free.', price: 50, imageUrl: furnitureImage, imageHint: 'furniture assembly', extraFee: 'The minimum service time is 2 hours.'},
+    { id: 2, serviceId: 'tv-mounting', name: 'Mounting', description: 'Secure and professional mounting services for any wall type.', price: 50, imageUrl: mountingImage, imageHint: 'living room'},
+    { id: 3, serviceId: 'trash-removal', name: 'Trash Removal Furniture', description: 'Efficient removal of unwanted furniture and trash. Extra fee may apply based on weight.', price: 50, imageUrl: trashImage, imageHint: 'trash furniture removal', extraFee: 'Extra fee depending on weight'},
+    { id: 4, serviceId: 'local-moving', name: 'Moving', description: 'Efficient and careful moving services for your home or office within the city.', price: 80, imageUrl: movingImage, imageHint: 'moving boxes'},
 ];
 
 const placeholderTimeSlots = [
@@ -61,7 +66,7 @@ export default async function BookingPage({ params }: { params: { serviceId: str
               )}
             </CardContent>
           </Card>
-          <BookingForm service={service} timeSlots={timeSlots} disabledDates={disabledDates} />
+          <BookingForm service={service as Service} timeSlots={timeSlots} disabledDates={disabledDates} />
         </div>
       </div>
     </div>
