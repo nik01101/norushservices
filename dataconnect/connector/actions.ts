@@ -9,7 +9,7 @@ import {
   DisabledDates,
   TimeSlots,
 } from '../schema/schema';
-import { defineMutation, fn, batch } from '@firebase/data-connect';
+import { defineMutation, fn } from '@firebase/data-connect';
 
 export const createBooking = defineMutation(
   'createBooking',
