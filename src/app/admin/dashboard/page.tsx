@@ -2,14 +2,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  createBooking,
-  toggleDisabledDate,
-  toggleTimeSlot,
-  updateBookingStatus,
-  rescheduleBooking
-} from '@/../dataconnect/connector/actions';
-import { getBookings, getServices, getAvailability } from '@/../dataconnect/connector/queries';
 import type { Booking, TimeSlot, Service, User } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,11 +24,22 @@ type EnrichedBooking = Booking & {
     serviceName: string;
 };
 
+// Placeholder Data
+const placeholderBookings: EnrichedBooking[] = [
+    { bookingId: 1, userId: 1, serviceId: 1, bookingDate: '2024-08-15', bookingTime: '10:00 AM', status: 'pending', createdAt: '2024-08-01T10:00:00Z', customerName: 'John Doe', customerEmail: 'john@example.com', customerPhone: '123-456-7890', serviceName: 'Furniture Assembly'},
+    { bookingId: 2, userId: 2, serviceId: 2, bookingDate: '2024-08-16', bookingTime: '02:00 PM', status: 'confirmed', createdAt: '2024-08-02T11:00:00Z', customerName: 'Jane Smith', customerEmail: 'jane@example.com', customerPhone: '987-654-3210', serviceName: 'TV Mounting' },
+];
+
+const placeholderTimeSlots: TimeSlot[] = [
+    { id: 1, time: '09:00 AM', available: true },
+    { id: 2, time: '10:00 AM', available: true },
+    { id: 3, time: '11:00 AM', available: false },
+];
+
 export default function AdminDashboard() {
-  const [bookings, setBookings] = useState<EnrichedBooking[]>([]);
-  const [disabledDates, setDisabledDates] = useState<Date[]>([]);
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
+  const [bookings, setBookings] = useState<EnrichedBooking[]>(placeholderBookings);
+  const [disabledDates, setDisabledDates] = useState<Date[]>([new Date('2024-08-25')]);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(placeholderTimeSlots);
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
   const [reschedulingBooking, setReschedulingBooking] = useState<EnrichedBooking | null>(null);
@@ -45,104 +48,26 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setIsClient(true);
-    fetchData();
+    // fetchData(); // Temporarily disabled
   }, []);
 
   const fetchData = async () => {
-    const [{ data: bookingsData, error: bookingsError }, { data: availabilityData, error: availabilityError }, {data: servicesData, error: servicesError}] = await Promise.all([
-      getBookings({}),
-      getAvailability({}),
-      getServices({})
-    ]);
-
-    if (bookingsError || availabilityError || servicesError) {
-      console.error(bookingsError || availabilityError || servicesError);
-      toast({ title: 'Error', description: 'Failed to load dashboard data.', variant: 'destructive' });
-      return;
-    }
-
-    if (servicesData?.services) {
-        setServices(servicesData.services);
-    }
-    
-    if (bookingsData) {
-        const enrichedBookings = bookingsData.bookings.map(booking => {
-            const user = bookingsData.users.find(u => u.userId === booking.userId);
-            const service = servicesData?.services?.find(s => s.id === booking.serviceId);
-            return {
-                ...booking,
-                customerName: user?.name ?? 'N/A',
-                customerEmail: user?.email ?? 'N/A',
-                customerPhone: user?.phone ?? 'N/A',
-                serviceName: service?.name ?? 'Unknown Service'
-            };
-        });
-        setBookings(enrichedBookings);
-    }
-
-    if (availabilityData) {
-      setDisabledDates(availabilityData.disabledDates.map(d => new Date(d.date)));
-      setTimeSlots(availabilityData.timeSlots);
-    }
+    // Data fetching logic will be re-implemented here
+    toast({ title: 'Info', description: 'Backend functionality is being rebuilt.', variant: 'default' });
   };
 
 
   const handleStatusChange = async (bookingId: number, status: 'confirmed' | 'cancelled') => {
-    const originalBookings = bookings;
-    setBookings(currentBookings =>
-      currentBookings.map(b => (b.bookingId === bookingId ? { ...b, status } : b))
-    );
-    
-    const { error } = await updateBookingStatus({ bookingId, status });
-    if (error) {
-        setBookings(originalBookings);
-        toast({ title: 'Error', description: `Failed to update booking status.`, variant: 'destructive'});
-    } else {
-        toast({
-            title: 'Booking Updated',
-            description: `Booking has been ${status}.`,
-            className: 'bg-accent text-accent-foreground',
-        });
-    }
+    toast({ title: 'In Progress', description: `Backend action for status change is being rebuilt.`, });
   };
   
   const handleDateToggle = async (date: Date | undefined) => {
     if (!date) return;
-    
-    const dateString = date.toISOString().split('T')[0];
-    const originalDisabledDates = disabledDates;
-
-    setDisabledDates(prev => {
-        const prevDateStrings = prev.map(d => d.toDateString());
-        const isAlreadyDisabled = prevDateStrings.includes(date.toDateString());
-        if (isAlreadyDisabled) {
-            return prev.filter(d => d.toDateString() !== date.toDateString());
-        } else {
-            return [...prev, date];
-        }
-    });
-
-    const { error } = await toggleDisabledDate({ date: dateString });
-
-    if (error) {
-        setDisabledDates(originalDisabledDates);
-        toast({ title: 'Error', description: 'Failed to update disabled date.', variant: 'destructive'});
-    }
+    toast({ title: 'In Progress', description: `Backend action for date toggle is being rebuilt.`, });
   };
 
   const handleToggleTimeSlot = async (time: string) => {
-    const originalTimeSlots = timeSlots;
-    const slotToToggle = timeSlots.find(slot => slot.time === time);
-    if (!slotToToggle) return;
-
-    setTimeSlots(prev => prev.map(slot => slot.time === time ? {...slot, available: !slot.available} : slot));
-
-    const { error } = await toggleTimeSlot({ time, available: !slotToToggle.available });
-
-    if (error) {
-        setTimeSlots(originalTimeSlots);
-        toast({ title: 'Error', description: 'Failed to update time slot.', variant: 'destructive' });
-    }
+    toast({ title: 'In Progress', description: `Backend action for time slot toggle is being rebuilt.`, });
   };
   
   const openRescheduleDialog = (booking: EnrichedBooking) => {
@@ -159,35 +84,7 @@ export default function AdminDashboard() {
 
   const handleReschedule = async () => {
     if (!reschedulingBooking || !newDate || !newTime) return;
-
-    const originalBookings = bookings;
-    
-    setBookings(currentBookings =>
-        currentBookings.map(b =>
-            b.bookingId === reschedulingBooking.bookingId
-                ? { ...b, bookingDate: newDate.toString(), bookingTime: newTime, status: 'confirmed' }
-                : b
-        )
-    );
-
-    const { error } = await rescheduleBooking({
-        bookingId: reschedulingBooking.bookingId,
-        bookingDate: newDate.toISOString().split('T')[0],
-        bookingTime: newTime
-    });
-
-    if (error) {
-        setBookings(originalBookings);
-        toast({ title: 'Error', description: 'Failed to reschedule booking.', variant: 'destructive'});
-    } else {
-        toast({
-            title: 'Booking Rescheduled',
-            description: 'The booking has been updated with the new date and time.',
-            className: 'bg-accent text-accent-foreground',
-        });
-    }
-
-
+    toast({ title: 'In Progress', description: `Backend action for rescheduling is being rebuilt.`, });
     closeRescheduleDialog();
   };
 
@@ -350,4 +247,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { createBooking } from '@/../dataconnect/connector/actions';
 import { format } from 'date-fns';
 
 interface BookingFormProps {
@@ -43,40 +42,14 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
     }
 
     setIsLoading(true);
-
-    try {
-        const { error } = await createBooking({
-            serviceId: service.serviceId,
-            customerName: name,
-            customerEmail: email,
-            customerPhone: phone,
-            customerAddress: address,
-            bookingDate: format(date, 'yyyy-MM-dd'),
-            bookingTime: selectedTime,
-        });
-
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        toast({
-            title: 'Booking Submitted!',
-            description: 'We will confirm your booking shortly via email.',
-            variant: 'default',
-            className: 'bg-accent text-accent-foreground',
-        });
-        
-        router.push('/booking-confirmation');
-    } catch (error) {
-        console.error(error);
-        toast({
-            title: 'Booking Failed',
-            description: 'Something went wrong. Please try again.',
-            variant: 'destructive',
-        });
-    } finally {
-        setIsLoading(false);
-    }
+    toast({ title: 'In Progress', description: 'Backend for booking is being rebuilt.' });
+    
+    // Simulate booking process
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    router.push('/booking-confirmation');
+    
+    setIsLoading(false);
   };
 
   return (

@@ -1,5 +1,4 @@
 
-import { getServices } from '@/../dataconnect/connector/queries';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Service } from '@/lib/types';
@@ -7,13 +6,15 @@ import { Card, CardContent} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
+const placeholderServices: Service[] = [
+    { id: 1, serviceId: 'furniture-assembly', name: 'Furniture Assembly', description: 'Expert assembly for your flat-pack furniture. Quick, reliable, and hassle-free.', price: 50, imageUrl: '/landing/1.png', imageHint: 'furniture assembly', extraFee: 'The minimum service time is 2 hours.'},
+    { id: 2, serviceId: 'tv-mounting', name: 'Mounting', description: 'Secure and professional mounting services for any wall type.', price: 50, imageUrl: '/landing/2.png', imageHint: 'living room'},
+    { id: 3, serviceId: 'trash-removal', name: 'Trash Removal Furniture', description: 'Efficient removal of unwanted furniture and trash. Extra fee may apply based on weight.', price: 50, imageUrl: '/landing/3.png', imageHint: 'trash furniture removal', extraFee: 'Extra fee depending on weight'},
+    { id: 4, serviceId: 'local-moving', name: 'Moving', description: 'Efficient and careful moving services for your home or office within the city.', price: 80, imageUrl: '/landing/4.png', imageHint: 'moving boxes'},
+];
+
 export async function ServicesCards() {
-    const { data, error } = await getServices({});
-    if (error) {
-        console.error(error);
-        return <p>Error loading services.</p>
-    }
-    const services = data?.services ?? [];
+    const services = placeholderServices;
 
     return (
         <section id="services" className="w-full py-12 md:py-24 lg:py-32 sectionbg relative">
