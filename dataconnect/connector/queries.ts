@@ -1,18 +1,20 @@
 
 'use server';
 import {db, Services, Bookings, TimeSlots, DisabledDates, Users} from '../schema/schema';
-import { createQuery } from '@firebase/data-connect';
+import { createQuery } from '@firebase/data-connect/server';
 
 export const getServices = createQuery(
-  'getServices',
-  async () => ({
-    services: await db.select(Services),
-  })
+  'services',
+  async () => {
+    return {
+      services: await db.select(Services),
+    }
+  }
 );
 
 
 export const getBookings = createQuery(
-  'getBookings',
+  'bookings',
   async () => {
     const bookings = await db.select(Bookings);
     const userIds = bookings.map((b) => b.userId);
@@ -24,22 +26,26 @@ export const getBookings = createQuery(
 
 
 export const getServiceById = createQuery(
-    'getServiceById',
+    'service',
     {
       params: {
         serviceId: 'string'
       }
     },
-    async ({serviceId}) => ({
+    async ({serviceId}) => {
+      return {
         service: await db.select(Services).where('serviceId', '=', serviceId).first()
-    })
+      }
+    }
 );
 
 
 export const getAvailability = createQuery(
-  'getAvailability',
-  async () => ({
-    timeSlots: await db.select(TimeSlots).orderBy('time', 'asc'),
-    disabledDates: await db.select(DisabledDates),
-  })
+  'availability',
+  async () => {
+    return {
+      timeSlots: await db.select(TimeSlots).orderBy('time', 'asc'),
+      disabledDates: await db.select(DisabledDates),
+    }
+  }
 );

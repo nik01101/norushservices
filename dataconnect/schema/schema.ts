@@ -9,7 +9,7 @@ import {
   boolean,
   date,
 } from 'drizzle-orm/pg-core';
-import {createConnector, pgDB} from '@firebase/data-connect';
+import { pgDB } from '@firebase/data-connect/server';
 
 export const db = pgDB();
 
@@ -66,15 +66,4 @@ export const TimeSlots = pgTable('time_slots', {
 export const DisabledDates = pgTable('disabled_dates', {
   id: serial('id').primaryKey(),
   date: date('date').notNull().unique(),
-});
-
-export default createConnector({
-  database: db,
-  models: {
-    Services,
-    Users,
-    Bookings,
-    TimeSlots,
-    DisabledDates,
-  },
 });
