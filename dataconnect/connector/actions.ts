@@ -9,7 +9,7 @@ import {
   DisabledDates,
   TimeSlots,
 } from '../schema/schema';
-import {batch, fn} from '@firebase/data-connect';
+import {batch, fn, FQL} from '@firebase/data-connect';
 
 export const createBooking = FQL.define(
   'createBooking',
