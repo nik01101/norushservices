@@ -9,27 +9,31 @@ import {
   DisabledDates,
   TimeSlots,
 } from '../schema/schema';
-import {batch, fn, FQL} from '@firebase/data-connect';
+import { defineMutation, fn, batch } from '@firebase/data-connect';
 
-export const createBooking = FQL.define(
+export const createBooking = defineMutation(
   'createBooking',
-  async ({
-    customerName,
-    customerEmail,
-    customerPhone,
-    customerAddress,
-    serviceId,
-    bookingDate,
-    bookingTime,
-  }: {
-    customerName: string;
-    customerEmail: string;
-    customerPhone: string;
-    customerAddress: string;
-    serviceId: string;
-    bookingDate: string;
-    bookingTime: string;
-  }) => {
+  {
+    input: {
+      customerName: 'string',
+      customerEmail: 'string',
+      customerPhone: 'string',
+      customerAddress: 'string',
+      serviceId: 'string',
+      bookingDate: 'string',
+      bookingTime: 'string',
+    }
+  },
+  async (input) => {
+    const {
+      customerName,
+      customerEmail,
+      customerPhone,
+      customerAddress,
+      serviceId,
+      bookingDate,
+      bookingTime,
+    } = input;
     return await db.run(async (tx) => {
       let user = await tx.select(Users).where('email', '=', customerEmail).first();
 
@@ -75,7 +79,7 @@ export const createBooking = FQL.define(
 );
 
 
-export const toggleTimeSlot = FQL.define('toggleTimeSlot', async ({time, available}: {time: string; available: boolean}) => {
+export const toggleTimeSlot = defineMutation('toggleTimeSlot', { input: {time: 'string', available: 'boolean'}}, async ({time, available}) => {
   return await db
     .update(TimeSlots)
     .set({available})
@@ -84,7 +88,7 @@ export const toggleTimeSlot = FQL.define('toggleTimeSlot', async ({time, availab
 });
 
 
-export const updateBookingStatus = FQL.define('updateBookingStatus', async ({bookingId, status}: {bookingId: number; status: BookingStatus}) => {
+export const updateBookingStatus = defineMutation('updateBookingStatus', { input: {bookingId: 'number', status: 'BookingStatus'}}, async ({bookingId, status}) => {
   return await db
     .update(Bookings)
     .set({status})
@@ -93,9 +97,10 @@ export const updateBookingStatus = FQL.define('updateBookingStatus', async ({boo
 });
 
 
-export const rescheduleBooking = FQL.define(
+export const rescheduleBooking = defineMutation(
   'rescheduleBooking',
-  async ({bookingId, bookingDate, bookingTime}: {bookingId: number, bookingDate: string, bookingTime: string}) => {
+  { input: {bookingId: 'number', bookingDate: 'string', bookingTime: 'string'}},
+  async ({bookingId, bookingDate, bookingTime}) => {
     return await db
       .update(Bookings)
       .set({
@@ -109,7 +114,7 @@ export const rescheduleBooking = FQL.define(
 );
 
 
-export const toggleDisabledDate = FQL.define('toggleDisabledDate', async ({date}: {date: string}) => {
+export const toggleDisabledDate = defineMutation('toggleDisabledDate', { input: {date: 'string'}}, async ({date}) => {
   return await db.run(async (tx) => {
     const existingDate = await tx
       .select(DisabledDates)
