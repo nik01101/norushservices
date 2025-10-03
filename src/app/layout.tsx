@@ -41,7 +41,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://picsum.photos" />
       </head>
-      <body className="font-body antialiased h-full bodybg">
+      <body className="font-body antialiased h-full">
         <div className="flex flex-col min-h-screen">
           <Header />
           <main className="">{children}</main>

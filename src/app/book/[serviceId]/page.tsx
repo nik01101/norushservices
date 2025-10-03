@@ -54,15 +54,15 @@ export default async function BookingPage({ params }: { params: { serviceId: str
       </Button>
       <div className="grid md:grid-cols-2 gap-12">
         <div>
-          <Card className="mb-8 bg-[#00D6A8]">
+          <Card className="mb-8 bg-secondary text-secondary-foreground">
             <CardHeader>
-              <CardTitle className="font-headline text-3xl text-[black]">{service.name}</CardTitle>
-              <CardDescription className="text-[black]">{service.description}</CardDescription>
+              <CardTitle className="font-headline text-3xl">{service.name}</CardTitle>
+              <CardDescription className="text-secondary-foreground/80">{service.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-[black]">${service.price}/hr</p>
+              <p className="text-4xl font-bold text-primary">${service.price}/hr</p>
                {service.extraFee && (
-                <p className="mt-2 text-sm text-black">{service.extraFee}</p>
+                <p className="mt-2 text-sm text-secondary-foreground">{service.extraFee}</p>
               )}
             </CardContent>
           </Card>
@@ -72,3 +72,4 @@ export default async function BookingPage({ params }: { params: { serviceId: str
     </div>
   );
 }
+

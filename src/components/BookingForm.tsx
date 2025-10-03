@@ -72,7 +72,7 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
                 <Label htmlFor="address">Address</Label>
                 <Input id="address" placeholder="123 Main St, Anytown" value={address} onChange={(e) => setAddress(e.target.value)} required />
             </div>
-            <Button type="submit" className="w-full h-12 text-lg bg-[black] text-white" disabled={isLoading}>
+            <Button type="submit" className="w-full h-12 text-lg" disabled={isLoading}>
               {isLoading ? 'Booking...' : `Book for $${service.price}/hr`}
             </Button>
         </form>
@@ -81,21 +81,13 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
           <div>
             <h2 className="font-bold text-xl mb-4 font-headline">1. Select a Date</h2>
             <Card>
-              <CardContent className="p-2 flex justify-center bg-[#faf9f2]">
+              <CardContent className="p-2 flex justify-center">
                 <Calendar
                   mode="single"
                   selected={date}
                   onSelect={setDate}
                   disabled={(d) => d < new Date(new Date().setHours(0,0,0,0)) || disabledDates.some(disabledDate => disabledDate.toDateString() === d.toDateString())}
                   initialFocus
-                  classNames={{
-                    day_selected: "bg-[black] text-white focus:bg-[black]",
-                    day_outside: "text-gray-900 opacity-100",
-                    day_today: "bg-[red] text-white",
-                    day_disabled: "text-gray-900 opacity-100",
-                    nav_button: "text-[black]",
-                    head_cell: "text-[black]",
-                  }}
                 />
               </CardContent>
             </Card>
@@ -105,14 +97,10 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
             <div className="grid grid-cols-3 gap-2">
               {timeSlots.map((slot: TimeSlot) => (
                 <Button
-                key={slot.time}
-                onClick={() => setSelectedTime(slot.time)}
-                disabled={!slot.available}
-                className={
-                  selectedTime === slot.time
-                    ? "bg-[#00D6A8] text-white hover:bg-[#00D6A8] hover:text-white"
-                    : "bg-[black] text-white hover:bg-[#00D6A8] hover:text-white"
-                }
+                    key={slot.time}
+                    variant={selectedTime === slot.time ? "default" : "secondary"}
+                    onClick={() => setSelectedTime(slot.time)}
+                    disabled={!slot.available}
               >
                   {slot.time}
                 </Button>
@@ -123,3 +111,4 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
     </div>
   );
 }
+

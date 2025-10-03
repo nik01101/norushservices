@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "no-rush-ba08a"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }
