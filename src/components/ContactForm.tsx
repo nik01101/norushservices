@@ -43,7 +43,7 @@ export function ContactForm() {
                 <Label htmlFor="message">Message</Label>
                 <Textarea id="message" required />
             </div>
-            <Button type="submit" className="w-full bg-black text-white" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Send Message'}
             </Button>
         </form>

@@ -33,7 +33,7 @@ export function ServicesCards() {
             <div className="container mx-auto px-8 md:px-6 py-9">
                     <div className="grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4 justify-center">
                         {services.map((service) => (
-                        <Card key={service.serviceId} className="mx-auto bg-black text-white rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
+                        <Card key={service.serviceId} className="mx-auto bg-secondary text-secondary-foreground rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
                             <div className="p-2">
                             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ">
                                 <Image
@@ -48,14 +48,14 @@ export function ServicesCards() {
                             </div>
                             </div>
                             <CardContent className="p-6 flex-grow flex flex-col">
-                            <h3 className="font-headline text-3xl font-[Akira] uppercase text-[white] leading-tight">{service.name}</h3>
-                            <p className="mt-2 text-white/90 flex-grow">{service.description}</p>
+                            <h3 className="font-headline text-3xl font-[Akira] uppercase text-secondary-foreground leading-tight">{service.name}</h3>
+                            <p className="mt-2 text-secondary-foreground/90 flex-grow">{service.description}</p>
                             {service.extraFee && (
-                                <p className="mt-2 text-sm text-[#00D6A8]">{service.extraFee}</p>
+                                <p className="mt-2 text-sm text-accent">{service.extraFee}</p>
                             )}
                             <div className="mt-6 flex justify-between items-end">
-                                <p className="text-4xl font-bold text-[#00D6A8]">${service.price}/hr</p>
-                                <Button asChild className="bg-[#00D6A8] text-black rounded-lg hover:bg-[#00b38f]">
+                                <p className="text-4xl font-bold text-accent">${service.price}/hr</p>
+                                <Button asChild className="bg-accent text-accent-foreground rounded-lg hover:bg-accent/90">
                                 <Link href={`/book/${service.serviceId}`}>
                                     Book Now <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>

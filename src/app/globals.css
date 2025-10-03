@@ -85,7 +85,8 @@
     background-color: hsl(var(--accent));
   }
   .btnbg{
-    background-color: #321c1f;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
   }
   h1, h2, h3, .font-headline {
     font-family: var(--font-akira), sans-serif;

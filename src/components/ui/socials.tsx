@@ -70,10 +70,10 @@ const SocialCard: React.FC<SocialCardProps> = ({ platform, handle, icon: Icon, l
     <Link href={link} target="_blank" rel="noopener noreferrer" className="group transform-style-3d">
       <div 
         ref={cardRef} 
-        className={cn("bg-black text-white rounded-lg overflow-hidden shadow-lg flex items-center p-4 transition-transform duration-300 ease-in-out group-hover:shadow-2xl relative", className)}
+        className={cn("bg-secondary text-secondary-foreground rounded-lg overflow-hidden shadow-lg flex items-center p-4 transition-transform duration-300 ease-in-out group-hover:shadow-2xl relative", className)}
         style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
-        <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#00D6A8] flex-shrink-0" style={{ transform: 'translateZ(20px)' }}>
+        <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-accent flex-shrink-0" style={{ transform: 'translateZ(20px)' }}>
           <Image
             src={rodo}
             alt="Rodrigo, founder of No Rush"
@@ -83,10 +83,10 @@ const SocialCard: React.FC<SocialCardProps> = ({ platform, handle, icon: Icon, l
         </div>
         <div className="ml-4" style={{ transform: 'translateZ(10px)' }}>
           <div className='flex items-center gap-2'>
-            <Icon className='h-5 w-5 text-white' />
+            <Icon className='h-5 w-5 text-secondary-foreground' />
             <h3 className='font-bold text-lg uppercase'>{platform}</h3>
           </div>
-          <p className='text-md text-[#00D6A8]'>{handle}</p>
+          <p className='text-md text-accent'>{handle}</p>
         </div>
       </div>
     </Link>
@@ -125,10 +125,10 @@ export function SocialMedia() {
     ];
 
     return (
-        <div className="w-full py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center bg-[#00D6A8] relative overflow-hidden">
+        <div className="w-full py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center bg-accent relative overflow-hidden">
              <div className="relative z-10 space-y-4 text-center mb-12 px-4">
-                <h2 className="text-4xl sm:text-5xl">Follow Us</h2>
-                <p className="max-w-[900px] mx-auto text-neutral-950 md:text-xl/relaxed">
+                <h2 className="text-4xl sm:text-5xl text-accent-foreground">Follow Us</h2>
+                <p className="max-w-[900px] mx-auto text-accent-foreground/90 md:text-xl/relaxed">
                     Check out our latest projects and updates on social media.
                 </p>
             </div>

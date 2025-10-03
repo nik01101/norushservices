@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../img/logo_png.png';
@@ -26,14 +27,14 @@ export function HomePage() {
                 <h1 className="text-5xl sm:text-5xl xl:text-8xl/none">
                   Reliable Help, Just a Click Away
                 </h1>
-                <p className="md:text-xl text-[black]">
+                <p className="md:text-xl text-foreground">
                   No Rush offers professional furniture assembly, mounting, and moving services to make your life easier.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Link
                   href="#services"
-                  className="btnbg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-medium text-white shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                  className="btnbg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-medium shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 >
                   Explore Services
                 </Link>
