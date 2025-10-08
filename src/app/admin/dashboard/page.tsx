@@ -2,7 +2,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { Booking, TimeSlot, Service, User } from '@/lib/types';
+import { useQuery } from '@tanstack/react-query';
+import { getBookings } from '@/dataconnect/client';
+import type { TimeSlot, Service, User } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -10,25 +12,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { MoreHorizontal, Check, X, LogOut, CalendarIcon } from 'lucide-react';
+import { MoreHorizontal, Check, X, LogOut, CalendarIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
 
-type EnrichedBooking = Booking & {
+type EnrichedBooking = {
+    bookingId: number;
+    userId: number;
+    serviceId: string;
+    bookingDate: string;
+    bookingTime: string;
+    status: 'pending' | 'confirmed' | 'cancelled';
+    createdAt: string;
     customerName: string;
     customerEmail: string;
     customerPhone: string | null;
     serviceName: string;
 };
-
-// Placeholder Data
-const placeholderBookings: EnrichedBooking[] = [
-    { bookingId: 1, userId: 1, serviceId: 1, bookingDate: '2024-08-15', bookingTime: '10:00 AM', status: 'pending', createdAt: '2024-08-01T10:00:00Z', customerName: 'John Doe', customerEmail: 'john@example.com', customerPhone: '123-456-7890', serviceName: 'Furniture Assembly'},
-    { bookingId: 2, userId: 2, serviceId: 2, bookingDate: '2024-08-16', bookingTime: '02:00 PM', status: 'confirmed', createdAt: '2024-08-02T11:00:00Z', customerName: 'Jane Smith', customerEmail: 'jane@example.com', customerPhone: '987-654-3210', serviceName: 'TV Mounting' },
-];
 
 const placeholderTimeSlots: TimeSlot[] = [
     { id: 1, time: '09:00 AM', available: true },
@@ -37,7 +40,11 @@ const placeholderTimeSlots: TimeSlot[] = [
 ];
 
 export default function AdminDashboard() {
-  const [bookings, setBookings] = useState<EnrichedBooking[]>(placeholderBookings);
+  const { data: bookingsData, isLoading: bookingsLoading, error: bookingsError } = useQuery({ 
+    queryKey: ['bookings'], 
+    queryFn: () => getBookings() 
+  });
+  
   const [disabledDates, setDisabledDates] = useState<Date[]>([new Date('2024-08-25')]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(placeholderTimeSlots);
   const { toast } = useToast();
@@ -48,14 +55,9 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setIsClient(true);
-    // fetchData(); // Temporarily disabled
   }, []);
 
-  const fetchData = async () => {
-    // Data fetching logic will be re-implemented here
-    toast({ title: 'Info', description: 'Backend functionality is being rebuilt.', variant: 'default' });
-  };
-
+  const bookings = bookingsData?.bookings || [];
 
   const handleStatusChange = async (bookingId: number, status: 'confirmed' | 'cancelled') => {
     toast({ title: 'In Progress', description: `Backend action for status change is being rebuilt.`, });
@@ -104,64 +106,75 @@ export default function AdminDashboard() {
         <div className="lg:col-span-2">
             <Card>
                 <CardHeader>
-                <CardTitle>Pending Bookings</CardTitle>
+                <CardTitle>Incoming Bookings</CardTitle>
                 <CardDescription>Review and manage incoming service requests.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                <Table>
-                    <TableHeader>
-                    <TableRow>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Service</TableHead>
-                        <TableHead className="hidden md:table-cell">Date & Time</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead><span className="sr-only">Actions</span></TableHead>
-                    </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                    {bookings.map((booking) => (
-                        <TableRow key={booking.bookingId}>
-                        <TableCell>
-                            <div className="font-medium">{booking.customerName}</div>
-                            <div className="text-sm text-muted-foreground">{booking.customerEmail}</div>
-                            <div className="text-sm text-muted-foreground">{booking.customerPhone}</div>
-                        </TableCell>
-                        <TableCell>{booking.serviceName}</TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {isClient ? format(new Date(booking.bookingDate), 'MM/dd/yyyy') : ''} at {booking.bookingTime}
-                        </TableCell>
-                        <TableCell>
-                            <Badge variant={booking.status === 'pending' ? 'secondary' : booking.status === 'confirmed' ? 'default' : 'destructive'}
-                             className={booking.status === 'confirmed' ? 'bg-accent text-accent-foreground' : ''}>
-                                {booking.status}
-                            </Badge>
-                        </TableCell>
-                        <TableCell>
-                            <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button aria-haspopup="true" size="icon" variant="ghost">
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'confirmed')}>
-                                <Check className="mr-2 h-4 w-4" /> Confirm
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => openRescheduleDialog(booking)}>
-                                  <CalendarIcon className="mr-2 h-4 w-4" /> Reschedule
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'cancelled')} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
-                                <X className="mr-2 h-4 w-4" /> Cancel
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
+                {bookingsLoading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                ) : bookingsError ? (
+                    <div className="text-center text-destructive">
+                        <p>Failed to load bookings.</p>
+                        <p className="text-sm">{bookingsError.message}</p>
+                    </div>
+                ) : (
+                    <Table>
+                        <TableHeader>
+                        <TableRow>
+                            <TableHead>Customer</TableHead>
+                            <TableHead>Service</TableHead>
+                            <TableHead className="hidden md:table-cell">Date & Time</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead><span className="sr-only">Actions</span></TableHead>
                         </TableRow>
-                    ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                        {bookings.map((booking) => (
+                            <TableRow key={booking.bookingId}>
+                            <TableCell>
+                                <div className="font-medium">{booking.customerName}</div>
+                                <div className="text-sm text-muted-foreground">{booking.customerEmail}</div>
+                                <div className="text-sm text-muted-foreground">{booking.customerPhone}</div>
+                            </TableCell>
+                            <TableCell>{booking.serviceName}</TableCell>
+                            <TableCell className="hidden md:table-cell">
+                              {isClient ? format(new Date(booking.bookingDate), 'PP') : ''} at {booking.bookingTime}
+                            </TableCell>
+                            <TableCell>
+                                <Badge variant={booking.status === 'pending' ? 'secondary' : booking.status === 'confirmed' ? 'default' : 'destructive'}
+                                 className={booking.status === 'confirmed' ? 'bg-accent text-accent-foreground' : ''}>
+                                    {booking.status}
+                                </Badge>
+                            </TableCell>
+                            <TableCell>
+                                <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'confirmed')}>
+                                    <Check className="mr-2 h-4 w-4" /> Confirm
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => openRescheduleDialog(booking)}>
+                                      <CalendarIcon className="mr-2 h-4 w-4" /> Reschedule
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'cancelled')} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                    <X className="mr-2 h-4 w-4" /> Cancel
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                                </DropdownMenu>
+                            </TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                )}
                 </CardContent>
             </Card>
         </div>
