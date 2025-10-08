@@ -133,5 +133,3 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
     </div>
   );
 }
-
-    

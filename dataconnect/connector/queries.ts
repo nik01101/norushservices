@@ -1,7 +1,7 @@
 
 'use server';
 import {db, Services, Bookings, TimeSlots, DisabledDates, Users} from '../schema/schema';
-import { createQuery } from '@firebase/data-connect/server';
+import { createQuery } from '@firebase/data-connect';
 import { and, eq, gte, lte } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 

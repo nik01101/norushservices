@@ -1,7 +1,7 @@
 
 'use server';
 import {db, Services, Bookings, TimeSlots, DisabledDates, Users} from '../schema/schema';
-import { createMutation } from '@firebase/data-connect/server';
+import { createMutation } from '@firebase/data-connect';
 import { and, eq, gte, lte, inArray } from 'drizzle-orm';
 
 export const createBooking = createMutation(
@@ -70,4 +70,3 @@ export const updateAvailability = createMutation(
         return { success: true };
     }
 );
-
