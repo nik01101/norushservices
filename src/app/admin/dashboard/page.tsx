@@ -2,8 +2,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useBookings } from '@/dataconnect-generated/react';
-import type { TimeSlot } from '@/lib/types';
+import { useBookings, useAvailability } from '@/dataconnect-generated/react';
+import { updateBookingStatus, updateAvailability } from '../../../../dataconnect/connector/mutations';
+import type { TimeSlot, Booking } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -17,35 +18,17 @@ import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-type EnrichedBooking = {
-    bookingId: number;
-    userId: number;
-    serviceId: string;
-    bookingDate: string;
-    bookingTime: string;
-    status: 'pending' | 'confirmed' | 'cancelled';
-    createdAt: string;
-    customerName: string;
-    customerEmail: string;
-    customerPhone: string | null;
-    serviceName: string;
-};
-
-const placeholderTimeSlots: TimeSlot[] = [
-    { id: 1, time: '09:00 AM', available: true },
-    { id: 2, time: '10:00 AM', available: true },
-    { id: 3, time: '11:00 AM', available: false },
-];
 
 export default function AdminDashboard() {
+  const queryClient = useQueryClient();
   const { data: bookingsData, isLoading: bookingsLoading, error: bookingsError } = useBookings();
-  
-  const [disabledDates, setDisabledDates] = useState<Date[]>([new Date('2024-08-25')]);
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(placeholderTimeSlots);
+  const { data: availabilityData, isLoading: availabilityLoading, error: availabilityError } = useAvailability();
+
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
-  const [reschedulingBooking, setReschedulingBooking] = useState<EnrichedBooking | null>(null);
+  const [reschedulingBooking, setReschedulingBooking] = useState<Booking | null>(null);
   const [newDate, setNewDate] = useState<Date | undefined>(undefined);
   const [newTime, setNewTime] = useState<string | undefined>(undefined);
 
@@ -54,21 +37,73 @@ export default function AdminDashboard() {
   }, []);
 
   const bookings = bookingsData?.bookings || [];
+  const timeSlots = availabilityData?.timeSlots || [];
+  const disabledDates = availabilityData?.disabledDates.map(d => new Date(d.date)) || [];
 
-  const handleStatusChange = async (bookingId: number, status: 'confirmed' | 'cancelled') => {
-    toast({ title: 'In Progress', description: `Backend action for status change is being rebuilt.`, });
+
+  const mutationOptions = {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['availability'] });
+      toast({
+        title: 'Success',
+        description: 'The operation was completed successfully.',
+        className: 'bg-accent text-accent-foreground',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'An unexpected error occurred.',
+        variant: 'destructive',
+      });
+    },
+  };
+
+  const statusMutation = useMutation({
+    mutationFn: (variables: { bookingId: number, status: 'confirmed' | 'cancelled' }) => 
+        updateBookingStatus({ bookingId: variables.bookingId, status: variables.status }),
+    ...mutationOptions
+  });
+
+  const availabilityMutation = useMutation({
+    mutationFn: (variables: { dates?: string[], timeSlots?: { time: string; available: boolean }[] }) =>
+      updateAvailability(variables),
+    ...mutationOptions
+  });
+
+  const rescheduleMutation = useMutation({
+    mutationFn: (variables: { bookingId: number, bookingDate: string, bookingTime: string }) =>
+      updateBookingStatus({ bookingId: variables.bookingId, bookingDate: variables.bookingDate, bookingTime: variables.bookingTime }),
+    ...mutationOptions,
+    onSuccess: () => {
+        mutationOptions.onSuccess();
+        closeRescheduleDialog();
+    }
+  })
+
+  const handleStatusChange = (bookingId: number, status: 'confirmed' | 'cancelled') => {
+    statusMutation.mutate({ bookingId, status });
   };
   
-  const handleDateToggle = async (date: Date | undefined) => {
+  const handleDateToggle = (date: Date | undefined) => {
     if (!date) return;
-    toast({ title: 'In Progress', description: `Backend action for date toggle is being rebuilt.`, });
+    const dateString = date.toISOString().split('T')[0];
+    const newDisabledDates = disabledDates.some(d => d.toISOString().split('T')[0] === dateString)
+      ? disabledDates.filter(d => d.toISOString().split('T')[0] !== dateString)
+      : [...disabledDates, date];
+
+    availabilityMutation.mutate({ dates: newDisabledDates.map(d => d.toISOString().split('T')[0]) });
   };
 
-  const handleToggleTimeSlot = async (time: string) => {
-    toast({ title: 'In Progress', description: `Backend action for time slot toggle is being rebuilt.`, });
+  const handleToggleTimeSlot = (time: string) => {
+    const newTimeSlots = timeSlots.map(slot => 
+      slot.time === time ? { ...slot, available: !slot.available } : slot
+    );
+    availabilityMutation.mutate({ timeSlots: newTimeSlots.map(({__typename, ...rest}) => rest )});
   };
   
-  const openRescheduleDialog = (booking: EnrichedBooking) => {
+  const openRescheduleDialog = (booking: Booking) => {
     setReschedulingBooking(booking);
     setNewDate(new Date(booking.bookingDate));
     setNewTime(booking.bookingTime);
@@ -80,11 +115,17 @@ export default function AdminDashboard() {
     setNewTime(undefined);
   }
 
-  const handleReschedule = async () => {
+  const handleReschedule = () => {
     if (!reschedulingBooking || !newDate || !newTime) return;
-    toast({ title: 'In Progress', description: `Backend action for rescheduling is being rebuilt.`, });
-    closeRescheduleDialog();
+    rescheduleMutation.mutate({
+        bookingId: reschedulingBooking.bookingId,
+        bookingDate: newDate.toISOString().split('T')[0],
+        bookingTime: newTime,
+    });
   };
+
+  const isLoading = bookingsLoading || availabilityLoading;
+  const error = bookingsError || availabilityError;
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -106,14 +147,14 @@ export default function AdminDashboard() {
                 <CardDescription>Review and manage incoming service requests.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                {bookingsLoading ? (
+                {isLoading ? (
                     <div className="flex justify-center items-center h-64">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     </div>
-                ) : bookingsError ? (
+                ) : error ? (
                     <div className="text-center text-destructive">
-                        <p>Failed to load bookings.</p>
-                        <p className="text-sm">{bookingsError.message}</p>
+                        <p>Failed to load data.</p>
+                        <p className="text-sm">{error.message}</p>
                     </div>
                 ) : (
                     <Table>
@@ -127,7 +168,7 @@ export default function AdminDashboard() {
                         </TableRow>
                         </TableHeader>
                         <TableBody>
-                        {bookings.map((booking: any) => (
+                        {bookings.map((booking: Booking) => (
                             <TableRow key={booking.bookingId}>
                             <TableCell>
                                 <div className="font-medium">{booking.customerName}</div>
@@ -153,14 +194,14 @@ export default function AdminDashboard() {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'confirmed')}>
+                                    <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'confirmed')} disabled={statusMutation.isPending && statusMutation.variables?.bookingId === booking.bookingId}>
                                     <Check className="mr-2 h-4 w-4" /> Confirm
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => openRescheduleDialog(booking as EnrichedBooking)}>
+                                    <DropdownMenuItem onClick={() => openRescheduleDialog(booking)}>
                                       <CalendarIcon className="mr-2 h-4 w-4" /> Reschedule
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'cancelled')} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                    <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'cancelled')} className="text-destructive focus:bg-destructive/10 focus:text-destructive" disabled={statusMutation.isPending && statusMutation.variables?.bookingId === booking.bookingId}>
                                     <X className="mr-2 h-4 w-4" /> Cancel
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -181,12 +222,15 @@ export default function AdminDashboard() {
                     <CardDescription>Disable dates that are not available for booking.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex justify-center">
-                    <Calendar
-                        mode="multiple"
-                        selected={disabledDates}
-                        onSelect={(dates) => handleDateToggle(dates?.[dates.length - 1])}
-                        className="p-0"
-                    />
+                    {availabilityLoading ? <Loader2 className="h-8 w-8 animate-spin text-primary" /> :
+                        <Calendar
+                            mode="multiple"
+                            selected={disabledDates}
+                            onSelect={(dates) => handleDateToggle(dates?.[dates.length - 1])}
+                            disabled={availabilityMutation.isPending}
+                            className="p-0"
+                        />
+                    }
                 </CardContent>
             </Card>
             <Card>
@@ -195,13 +239,15 @@ export default function AdminDashboard() {
                     <CardDescription>Enable or disable specific time slots for all days.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {timeSlots.map(slot => (
+                    {availabilityLoading ? <Loader2 className="h-8 w-8 animate-spin text-primary" /> :
+                    timeSlots.map((slot: TimeSlot) => (
                         <div key={slot.time} className="flex items-center justify-between">
                             <Label htmlFor={`time-${slot.time}`} className={!slot.available ? 'text-muted-foreground line-through' : ''}>{slot.time}</Label>
                             <Switch
                                 id={`time-${slot.time}`}
                                 checked={slot.available}
                                 onCheckedChange={() => handleToggleTimeSlot(slot.time)}
+                                disabled={availabilityMutation.isPending}
                             />
                         </div>
                     ))}
@@ -249,10 +295,14 @@ export default function AdminDashboard() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={closeRescheduleDialog}>Cancel</Button>
-            <Button onClick={handleReschedule} disabled={!newDate || !newTime}>Update Booking</Button>
+            <Button onClick={handleReschedule} disabled={!newDate || !newTime || rescheduleMutation.isPending}>
+                {rescheduleMutation.isPending ? 'Updating...' : 'Update Booking'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+
+    

@@ -23,20 +23,23 @@ export type User = {
 export type Booking = {
   bookingId: number;
   userId: number;
-  serviceId: number;
+  serviceId: string;
   bookingDate: string; // ISO date string
   bookingTime: string;
   status: 'pending' | 'confirmed' | 'cancelled';
   createdAt: string; // ISO datetime string
+  customerName: string,
+  customerEmail: string,
+  customerPhone: string | null,
+  serviceName: string
 };
 
 export type TimeSlot = {
-  id: number;
+  __typename: 'TimeSlots',
   time: string;
   available: boolean;
 };
 
 export type DisabledDate = {
-    id: number;
     date: string; // ISO date string
 }

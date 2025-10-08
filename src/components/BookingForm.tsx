@@ -3,6 +3,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createBooking } from '../../dataconnect/connector/mutations';
 import type { Service, TimeSlot } from '@/lib/types';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,6 +23,7 @@ interface BookingFormProps {
 export function BookingForm({ service, timeSlots, disabledDates }: BookingFormProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
@@ -28,7 +31,26 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: createBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      toast({
+        title: 'Booking Submitted!',
+        description: "We've received your request and will confirm shortly.",
+        className: 'bg-accent text-accent-foreground',
+      });
+      router.push('/booking-confirmation');
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Booking Failed',
+        description: error.message || 'Could not save your booking. Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,15 +63,15 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
       return;
     }
 
-    setIsLoading(true);
-    toast({ title: 'In Progress', description: 'Backend for booking is being rebuilt.' });
-    
-    // Simulate booking process
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    router.push('/booking-confirmation');
-    
-    setIsLoading(false);
+    mutation.mutate({
+      serviceId: service.serviceId,
+      bookingDate: format(date, 'yyyy-MM-dd'),
+      bookingTime: selectedTime,
+      name,
+      email,
+      phone,
+      address,
+    });
   };
 
   return (
@@ -72,8 +94,8 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
                 <Label htmlFor="address">Address</Label>
                 <Input id="address" placeholder="123 Main St, Anytown" value={address} onChange={(e) => setAddress(e.target.value)} required />
             </div>
-            <Button type="submit" className="w-full h-12 text-lg" disabled={isLoading}>
-              {isLoading ? 'Booking...' : `Book for $${service.price}/hr`}
+            <Button type="submit" className="w-full h-12 text-lg" disabled={mutation.isPending}>
+              {mutation.isPending ? 'Booking...' : `Book for $${service.price}/hr`}
             </Button>
         </form>
 
@@ -112,3 +134,4 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
   );
 }
 
+    

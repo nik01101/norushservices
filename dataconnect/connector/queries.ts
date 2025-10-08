@@ -1,7 +1,9 @@
+
 'use server';
 import {db, Services, Bookings, TimeSlots, DisabledDates, Users} from '../schema/schema';
 import { createQuery } from '@firebase/data-connect/server';
 import { and, eq, gte, lte } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 export const getServices = createQuery(
     'services',
@@ -13,7 +15,7 @@ export const getServices = createQuery(
 
 export const getServiceById = createQuery(
     'service',
-    async (serviceId: string) => {
+    async ({serviceId}: {serviceId: string}) => {
         const [service] = await db.select().from(Services).where(eq(Services.serviceId, serviceId));
         return { service };
     }
@@ -46,7 +48,8 @@ export const getBookings = createQuery(
         })
         .from(Bookings)
         .leftJoin(Users, eq(Bookings.userId, Users.userId))
-        .left-join(Services, eq(Bookings.serviceId, Services.serviceId));
+        .leftJoin(Services, eq(Bookings.serviceId, Services.serviceId))
+        .orderBy(sql`${Bookings.createdAt} desc`);
 
         return { bookings };
     }
