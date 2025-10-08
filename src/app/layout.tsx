@@ -6,9 +6,8 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Inter, Noto_Sans } from 'next/font/google';
 import localFont from 'next/font/local';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryProvider } from '@/components/QueryProvider';
 
-const queryClient = new QueryClient();
 
 const inter = Inter({
   subsets: ['latin'],
@@ -45,14 +44,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://picsum.photos" />
       </head>
       <body className="font-body antialiased h-full">
-        <QueryClientProvider client={queryClient}>
+        <QueryProvider>
           <div className="flex flex-col min-h-screen">
             <Header />
             <main className="">{children}</main>
             <Footer />
           </div>
           <Toaster />
-        </QueryClientProvider>
+        </QueryProvider>
       </body>
     </html>
   );
