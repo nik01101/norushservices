@@ -2,9 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getBookings } from '@/dataconnect/client';
-import type { TimeSlot, Service, User } from '@/lib/types';
+import { useBookings } from '@/dataconnect-generated/react';
+import type { TimeSlot } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -40,10 +39,7 @@ const placeholderTimeSlots: TimeSlot[] = [
 ];
 
 export default function AdminDashboard() {
-  const { data: bookingsData, isLoading: bookingsLoading, error: bookingsError } = useQuery({ 
-    queryKey: ['bookings'], 
-    queryFn: () => getBookings() 
-  });
+  const { data: bookingsData, isLoading: bookingsLoading, error: bookingsError } = useBookings();
   
   const [disabledDates, setDisabledDates] = useState<Date[]>([new Date('2024-08-25')]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(placeholderTimeSlots);
@@ -131,7 +127,7 @@ export default function AdminDashboard() {
                         </TableRow>
                         </TableHeader>
                         <TableBody>
-                        {bookings.map((booking) => (
+                        {bookings.map((booking: any) => (
                             <TableRow key={booking.bookingId}>
                             <TableCell>
                                 <div className="font-medium">{booking.customerName}</div>
@@ -160,7 +156,7 @@ export default function AdminDashboard() {
                                     <DropdownMenuItem onClick={() => handleStatusChange(booking.bookingId, 'confirmed')}>
                                     <Check className="mr-2 h-4 w-4" /> Confirm
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => openRescheduleDialog(booking)}>
+                                    <DropdownMenuItem onClick={() => openRescheduleDialog(booking as EnrichedBooking)}>
                                       <CalendarIcon className="mr-2 h-4 w-4" /> Reschedule
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
