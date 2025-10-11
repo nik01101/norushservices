@@ -1,12 +1,4 @@
 {
-  "hosting": {
-    "public": ".next",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
-  },
   "firestore": {
     "database": "(default)",
     "location": "us-central1",
