@@ -1,79 +1,93 @@
+// This remains a Server Component (no 'use client')
 
-'use client';
-
-import '../.././globals.css';
 import { notFound } from 'next/navigation';
-import { useServiceById, useAvailability } from '@/dataconnect-generated/react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookingForm } from '@/components/BookingForm';
-import type { Service } from '@/lib/types';
+import type { Service, AvailabilitySettings, TimeSlot } from '@/lib/types';
 
+// Import all necessary Firestore functions
+import { db } from '@/firebaseConfig';
+import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 
-export default function BookingPage({ params }: { params: { serviceId: string } }) {
-  const { data: serviceData, isLoading: serviceLoading, error: serviceError } = useServiceById({ serviceId: params.serviceId });
-  const { data: availabilityData, isLoading: availabilityLoading, error: availabilityError } = useAvailability();
-
-  const service = serviceData?.service;
-  const timeSlots = availabilityData?.timeSlots || [];
-  const disabledDates = availabilityData?.disabledDates.map(d => new Date(d.date)) || [];
+// --- Helper function to fetch the service by its custom 'serviceId' field ---
+async function getServiceByServiceId(serviceId: string): Promise<Service> {
+  const servicesCollectionRef = collection(db, 'services');
+  // Create a query to find the document where the 'serviceId' field matches
+  const q = query(servicesCollectionRef, where('serviceId', '==', serviceId), limit(1));
   
-  const isLoading = serviceLoading || availabilityLoading;
-  const error = serviceError || availabilityError;
+  const querySnapshot = await getDocs(q);
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-12 px-4 md:px-6 flex justify-center items-center h-[50vh]">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (error) {
-     return (
-      <div className="container mx-auto py-12 px-4 md:px-6 text-center text-destructive">
-        <p>Failed to load booking information.</p>
-        <p className="text-sm">{error.message}</p>
-        <Button variant="outline" asChild className="mt-4">
-            <Link href="/">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-            </Link>
-        </Button>
-      </div>
-     )
-  }
-
-  if (!service) {
+  if (querySnapshot.empty) {
+    // If no document is found, trigger the 404 page
     notFound();
   }
 
+  const serviceDoc = querySnapshot.docs[0];
+  return {
+    id: serviceDoc.id, // The actual Firestore document ID
+    ...serviceDoc.data(),
+  } as Service;
+}
+
+// --- Helper function to fetch availability settings ---
+async function getAvailability(): Promise<{ timeSlots: TimeSlot[], disabledDates: Date[] }> {
+  const settingsDocRef = doc(db, 'availability', 'settings');
+  const settingsDocSnap = await getDoc(settingsDocRef);
+
+  if (!settingsDocSnap.exists()) {
+    // If settings don't exist, something is wrong with the setup.
+    // We'll throw an error to be caught by Next.js's error boundary.
+    throw new Error("Availability settings not found in the database.");
+  }
+  
+  const settingsData = settingsDocSnap.data() as AvailabilitySettings;
+  
+  // Convert the date strings from Firestore into Date objects for the Calendar component
+  const disabledDates = settingsData.disabledDates.map(dateStr => new Date(dateStr));
+  
+  return {
+    timeSlots: settingsData.timeSlots,
+    disabledDates: disabledDates,
+  };
+}
+
+// --- The Main Page Component ---
+export default async function BookingPage({ params }: { params: { serviceId: string } }) {
+  
+  // Fetch both the service and availability data concurrently for better performance
+  const [service, availability] = await Promise.all([
+    getServiceByServiceId(params.serviceId),
+    getAvailability()
+  ]);
+
   return (
-    <div className="container mx-auto py-12 px-4 md:px-6">
-      <Button variant="outline" asChild className="mb-8">
-        <Link href="/">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </Link>
-      </Button>
-      <div className="grid md:grid-cols-2 gap-12">
-        <div>
-          <Card className="mb-8 bg-secondary text-secondary-foreground">
-            <CardHeader>
-              <CardTitle className="font-headline text-3xl">{service.name}</CardTitle>
-              <CardDescription className="text-secondary-foreground/80">{service.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold text-accent">${service.price}/hr</p>
-               {service.extraFee && (
-                <p className="mt-2 text-sm text-secondary-foreground/80">{service.extraFee}</p>
-              )}
-            </CardContent>
-          </Card>
-          <BookingForm service={service as Service} timeSlots={timeSlots} disabledDates={disabledDates} />
+    <div className="bodybg min-h-screen">
+      <div className="container mx-auto py-12 px-4 md:px-6">
+        <div className="mb-8">
+          <Button variant="outline" asChild>
+            <Link href="/#services">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Services
+            </Link>
+          </Button>
         </div>
+
+        <Card className="max-w-4xl mx-auto shadow-lg">
+          <CardHeader className="text-center bg-muted p-6">
+            <CardTitle className="text-3xl font-bold font-headline">{service.name}</CardTitle>
+            <CardDescription className="text-lg">{service.description}</CardDescription>
+          </CardHeader>
+          <CardContent className="p-8">
+            <BookingForm 
+              service={service} 
+              timeSlots={availability.timeSlots} 
+              disabledDates={availability.disabledDates}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -3,76 +3,93 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createBooking } from '../../dataconnect/connector/mutations';
-import type { Service, TimeSlot } from '@/lib/types';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
+import type { Service, TimeSlot } from '@/lib/types';
+import { db } from '@/firebaseConfig'; // Adjust path if needed
+import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 
 interface BookingFormProps {
-    service: Service;
-    timeSlots: TimeSlot[];
-    disabledDates: Date[];
+  service: Service & { id: string }; // Make sure service type includes an ID
+  timeSlots: TimeSlot[];
+  disabledDates: Date[];
 }
 
 export function BookingForm({ service, timeSlots, disabledDates }: BookingFormProps) {
-  const router = useRouter();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+const router = useRouter();
+const { toast } = useToast();
 
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [selectedTime, setSelectedTime] = useState<string | undefined>();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
+const [date, setDate] = useState<Date | undefined>(new Date());
+const [selectedTime, setSelectedTime] = useState<string | undefined>();
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [phone, setPhone] = useState('');
+const [address, setAddress] = useState('');
+const [isBooking, setIsBooking] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: createBooking,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      toast({
-        title: 'Booking Submitted!',
-        description: "We've received your request and will confirm shortly.",
-        className: 'bg-accent text-accent-foreground',
-      });
-      router.push('/booking-confirmation');
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'Booking Failed',
-        description: error.message || 'Could not save your booking. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const handleBooking = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!date || !selectedTime || !name || !email || !address || !phone) {
-      toast({
-        title: 'Missing Information',
-        description: 'Please fill out all fields to complete your booking.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    mutation.mutate({
-      serviceId: service.serviceId,
-      bookingDate: format(date, 'yyyy-MM-dd'),
-      bookingTime: selectedTime,
-      name,
-      email,
-      phone,
-      address,
+const handleBooking = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!date || !selectedTime || !name || !email || !address || !phone) {
+    toast({
+      title: 'Missing Information',
+      description: 'Please fill out all fields to complete your booking.',
+      variant: 'destructive',
     });
-  };
+    return;
+  }
+
+  setIsBooking(true);
+
+  try {
+    // Combine date and time into a single Date object
+    const bookingDateTime = new Date(date);
+    const [time, period] = selectedTime.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    if (period.toUpperCase() === 'PM' && hours < 12) hours += 12;
+    if (period.toUpperCase() === 'AM' && hours === 12) hours = 0;
+    bookingDateTime.setHours(hours, minutes, 0, 0);
+
+    // Structure the data for Firestore
+    const newBookingData = {
+      serviceId: service.id,
+      serviceName: service.name,
+      servicePrice: service.price,
+      bookingDate: Timestamp.fromDate(bookingDateTime),
+      customerName: name,
+      customerEmail: email,
+      customerPhone: phone,
+      customerAddress: address,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    };
+
+    // Add the document to the "bookings" collection in Firestore
+    const bookingsCollectionRef = collection(db, 'bookings');
+    await addDoc(bookingsCollectionRef, newBookingData);
+
+    // Show success toast and redirect
+    toast({
+      title: 'Booking Submitted!',
+      description: "We've received your request and will confirm shortly.",
+      className: 'bg-accent text-accent-foreground',
+    });
+    router.push('/booking-confirmation');
+
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    toast({
+      title: 'Booking Failed',
+      description: 'Something went wrong. Please try again.',
+      variant: 'destructive',
+    });
+  } finally {
+    setIsBooking(false);
+  }
+};
 
   return (
     <div className="grid md:grid-cols-2 gap-12">
@@ -94,8 +111,8 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
                 <Label htmlFor="address">Address</Label>
                 <Input id="address" placeholder="123 Main St, Anytown" value={address} onChange={(e) => setAddress(e.target.value)} required />
             </div>
-            <Button type="submit" className="w-full h-12 text-lg" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Booking...' : `Book for $${service.price}/hr`}
+            <Button type="submit" className="w-full h-12 text-lg" disabled={isBooking}>
+              {isBooking ? 'Booking...' : `Book for $${service.price}/hr`}
             </Button>
         </form>
 
