@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from 'react';
 import anime from 'animejs';
 import { Instagram, Facebook, Music } from 'lucide-react';
 import Image from 'next/image';
-import rodo from '../../img/rodo.png';
+import rodo from '../../img/icon_3.png';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -77,8 +77,9 @@ const SocialCard: React.FC<SocialCardProps> = ({ platform, handle, icon: Icon, l
           <Image
             src={rodo}
             alt="Rodrigo, founder of No Rush"
-            layout='fill'
-            className='object-cover'
+            className="object-cover w-full h-full object-center [image-rendering:high-quality]"
+            quality={100}
+            width={64} height={64}
           />
         </div>
         <div className="ml-4" style={{ transform: 'translateZ(10px)' }}>
@@ -112,15 +113,6 @@ export function SocialMedia() {
             link: 'https://www.facebook.com/norushfurniture/',
             alt: 'Facebook',
             className: 'lg:row-start-1 lg:col-start-2'
-        },
-        {
-            id: 3,
-            platform: 'TikTok',
-            handle: '@norushfurniture',
-            icon: Music, 
-            link: 'https://www.tiktok.com/@norushfurniture',
-            alt: 'TikTok',
-            className: 'lg:row-start-2 lg:col-start-3'
         },
     ];
 

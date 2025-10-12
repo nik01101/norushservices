@@ -35,16 +35,16 @@ export function ServicesCards() {
                         {services.map((service) => (
                         <Card key={service.serviceId} className="mx-auto bg-secondary text-secondary-foreground rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
                             <div className="p-2">
-                            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ">
-                                <Image
+                            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden transform-gpu [transform:translateZ(0)]">
+                            <Image
                                 src={service.imageUrl}
                                 alt={service.name}
                                 fill
-                                className="object-cover"
-                                data-ai-hint={service.imageHint}
-                                quality="100"
+                                quality={85}
                                 placeholder="blur"
-                                />
+                                className="object-cover"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                            />
                             </div>
                             </div>
                             <CardContent className="p-6 flex-grow flex flex-col">

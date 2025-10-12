@@ -27,7 +27,7 @@ export function Header() {
     <header className="backdrop-blur-sm top-0 z-40 sticky">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <Image src={logo} alt="No Rush logo" width={32} height={32} quality="100" />
+          <Image src={logo} alt="No Rush logo" width={40} height={40} quality={100} />
           <span>No Rush</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6">
