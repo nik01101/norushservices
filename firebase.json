@@ -15,5 +15,13 @@
       "firebase-debug.*.log",
       "functions"
     ]
+  },
+  "hosting": {
+    "public": "blank-hosting",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
   }
 }

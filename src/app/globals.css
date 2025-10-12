@@ -5,9 +5,9 @@
 
 @layer base {
   :root {
-    --background: 37 54% 92%; /* old-lace */
+    --background: 48 33% 96%; /* bone-white */
     --foreground: 10 21% 29%; /* rose-ebony */
-    --card: 37 54% 92%; /* old-lace */
+    --card: 48 33% 96%; /* bone-white */
     --card-foreground: 10 21% 29%;
     --popover: 37 54% 92%;
     --popover-foreground: 10 21% 29%;
@@ -107,17 +107,7 @@
   #testcarousel{
     overflow:visible;
   }
-  @keyframes blob {
-    0%, 100% {
-      transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-      transform: translate(30px, -50px) scale(1.1);
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-    }
-  }
+
   
   .animation-delay-2000 {
     animation-delay: 2s;

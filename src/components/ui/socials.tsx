@@ -125,7 +125,7 @@ export function SocialMedia() {
     ];
 
     return (
-        <div className="w-full py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center bg-accent relative overflow-hidden">
+        <div className="w-full py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center bg-[--background] relative overflow-hidden">
              <div className="relative z-10 space-y-4 text-center mb-12 px-4">
                 <h2 className="text-4xl sm:text-5xl text-accent-foreground">Follow Us</h2>
                 <p className="max-w-[900px] mx-auto text-accent-foreground/90 md:text-xl/relaxed">

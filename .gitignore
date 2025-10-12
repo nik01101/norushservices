@@ -44,3 +44,4 @@ next-env.d.ts
 src/firebaseConfig.js
 firebase-debug.log
 firestore-debug.log
+hash-password.js

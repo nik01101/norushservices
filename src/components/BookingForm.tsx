@@ -10,11 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import type { Service, TimeSlot } from '@/lib/types';
-import { db } from '@/firebaseConfig'; // Adjust path if needed
+import { db } from '@/firebaseConfig'; 
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 
 interface BookingFormProps {
-  service: Service & { id: string }; // Make sure service type includes an ID
+  service: Service & { id: string }; 
   timeSlots: TimeSlot[];
   disabledDates: Date[];
 }
@@ -45,7 +45,6 @@ const handleBooking = async (e: React.FormEvent) => {
   setIsBooking(true);
 
   try {
-    // Combine date and time into a single Date object
     const bookingDateTime = new Date(date);
     const [time, period] = selectedTime.split(' ');
     let [hours, minutes] = time.split(':').map(Number);
@@ -53,7 +52,6 @@ const handleBooking = async (e: React.FormEvent) => {
     if (period.toUpperCase() === 'AM' && hours === 12) hours = 0;
     bookingDateTime.setHours(hours, minutes, 0, 0);
 
-    // Structure the data for Firestore
     const newBookingData = {
       serviceId: service.id,
       serviceName: service.name,
@@ -67,11 +65,9 @@ const handleBooking = async (e: React.FormEvent) => {
       createdAt: serverTimestamp(),
     };
 
-    // Add the document to the "bookings" collection in Firestore
     const bookingsCollectionRef = collection(db, 'bookings');
     await addDoc(bookingsCollectionRef, newBookingData);
 
-    // Show success toast and redirect
     toast({
       title: 'Booking Submitted!',
       description: "We've received your request and will confirm shortly.",
