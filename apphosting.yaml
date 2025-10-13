@@ -1,6 +1,5 @@
 specVersion: v1alpha1
 runConfig:
   environmentVariables:
-    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
-      secret: GOOGLE_MAPS_API_KEY
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: "THIS_IS_A_TEST_VALUE_FROM_YAML"
 buildConfig: {}
