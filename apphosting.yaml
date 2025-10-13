@@ -1,6 +1,6 @@
 specVersion: v1alpha1
-
-# The runConfig and buildConfig can be empty for this step.
-# The important thing is that we are NOT trying to access a secret.
-runConfig: {}
+runConfig:
+  environmentVariables:
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
+      secret: GOOGLE_MAPS_API_KEY
 buildConfig: {}
