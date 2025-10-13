@@ -32,6 +32,8 @@ interface ContactMessage {
 interface Booking {
   id: string;
   customerName: string;
+  customerEmail: string;  
+  customerPhone: string;
   serviceName: string;
   bookingDate: Date; // We will work with Date objects on the client
   status: 'Confirmed' | 'Pending' | 'Cancelled';
@@ -64,6 +66,8 @@ export default function AdminDashboard() {
     const unsubscribe = onSnapshot(bookingsQuery, (querySnapshot) => {
       const bookingsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
+        customerEmail: doc.data().customerEmail, 
+        customerPhone: doc.data().customerPhone,
         ...doc.data(),
         bookingDate: (doc.data().bookingDate as Timestamp).toDate(), // Convert Firestore Timestamp to JS Date
       } as Booking));
@@ -248,6 +252,14 @@ const handleMarkAsRead = async (messageId: string) => {
                         <TableRow key={booking.id}>
                           <TableCell>{booking.customerName}</TableCell>
                           <TableCell>{booking.serviceName}</TableCell>
+                          <TableCell>
+                            <div className="text-sm text-muted-foreground hidden md:block">
+                              {booking.customerEmail}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {booking.customerPhone}
+                            </div>
+                          </TableCell>
                           <TableCell>{format(booking.bookingDate, 'MMM d, yyyy')} at {format(booking.bookingDate, 'p')}</TableCell>
                           <TableCell><Badge variant={booking.status === 'Confirmed' ? 'default' : booking.status === 'Cancelled' ? 'destructive' : 'secondary'}>{booking.status}</Badge></TableCell>
                           <TableCell>
