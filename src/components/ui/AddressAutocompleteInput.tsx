@@ -19,7 +19,6 @@ interface AddressAutocompleteInputProps {
 }
 
 export function AddressAutocompleteInput({ onAddressSelect, initialValue = '' }: AddressAutocompleteInputProps) {
-  // 1. Load the Google Maps script
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
