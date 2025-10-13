@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import type { Service, TimeSlot } from '@/lib/types';
 import { db } from '@/firebaseConfig'; 
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { AddressAutocompleteInput } from '@/components/ui/AddressAutocompleteInput';
+
 
 interface BookingFormProps {
   service: Service & { id: string }; 
@@ -23,13 +25,38 @@ export function BookingForm({ service, timeSlots, disabledDates }: BookingFormPr
 const router = useRouter();
 const { toast } = useToast();
 
-const [date, setDate] = useState<Date | undefined>(new Date());
+const [date, setDate] = useState<Date | undefined>(); 
 const [selectedTime, setSelectedTime] = useState<string | undefined>();
 const [name, setName] = useState('');
 const [email, setEmail] = useState('');
 const [phone, setPhone] = useState('');
 const [address, setAddress] = useState('');
 const [isBooking, setIsBooking] = useState(false);
+
+const handleAddressSelect = (selectedAddress: string) => {
+  setAddress(selectedAddress);
+};
+
+const modifiersClassNames = {
+  unavailable: 'bg-muted text-muted-foreground !line-through opacity-50 cursor-not-allowed',
+};
+
+useEffect(() => {
+  setDate(new Date());
+}, []);
+
+const isDateUnavailable = (date: Date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); 
+
+  return date < today || disabledDates.some(disabledDate => 
+    disabledDate.toDateString() === date.toDateString()
+  );
+}
+
+const modifiers = {
+  unavailable: isDateUnavailable,
+};
 
 const handleBooking = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -87,6 +114,29 @@ const handleBooking = async (e: React.FormEvent) => {
   }
 };
 
+if (!date) {
+  // Render a skeleton or a simple loading message for the calendar part
+  // while the client-side `useEffect` runs.
+  return (
+    <div className="grid md:grid-cols-2 gap-12">
+      <form className="space-y-6">
+        {/* ... you can show a skeleton of the form here ... */}
+      </form>
+      <div className="space-y-8 animate-pulse">
+          <div>
+            <h2 className="font-bold text-xl mb-4 font-headline">1. Select a Date</h2>
+            <div className="bg-muted rounded-lg h-[290px]"></div>
+          </div>
+           <div>
+            <h2 className="font-bold text-xl mb-4 font-headline">2. Select a Time</h2>
+            <div className="bg-muted rounded-lg h-[100px]"></div>
+          </div>
+      </div>
+    </div>
+  );
+}
+
+
   return (
     <div className="grid md:grid-cols-2 gap-12">
         <form onSubmit={handleBooking} className="space-y-6">
@@ -103,9 +153,9 @@ const handleBooking = async (e: React.FormEvent) => {
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input id="phone" type="tel" placeholder="(123) 456-7890" value={phone} onChange={(e) => setPhone(e.target.value)} required />
               </div>
-            <div className="space-y-2">
+              <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
-                <Input id="address" placeholder="123 Main St, Anytown" value={address} onChange={(e) => setAddress(e.target.value)} required />
+                <AddressAutocompleteInput onAddressSelect={handleAddressSelect} />
             </div>
             <Button type="submit" className="w-full h-12 text-lg" disabled={isBooking}>
               {isBooking ? 'Booking...' : `Book for $${service.price}/hr`}
@@ -118,11 +168,13 @@ const handleBooking = async (e: React.FormEvent) => {
             <Card>
               <CardContent className="p-2 flex justify-center">
                 <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  disabled={(d) => d < new Date(new Date().setHours(0,0,0,0)) || disabledDates.some(disabledDate => disabledDate.toDateString() === d.toDateString())}
-                  initialFocus
+                 mode="single"
+                 selected={date}
+                 onSelect={setDate}
+                 initialFocus
+                 disabled={isDateUnavailable}
+                 modifiers={modifiers}
+                 modifiersClassNames={modifiersClassNames}
                 />
               </CardContent>
             </Card>

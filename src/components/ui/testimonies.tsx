@@ -77,7 +77,7 @@ export function TestimonialCarousel() {
           {testimonials.map((testimonial, index) => (
             <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
               <div className="p-1">
-                <Card>
+                <Card className="bg-[white]">
                   <CardHeader>
                     <div className="flex items-center gap-4">
                       <Avatar>
@@ -174,7 +174,7 @@ export function TestimonialCarousel2() {
           {testimonials.map((testimonial, index) => (
             <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
               <div className="p-1">
-                <Card>
+                <Card className="bg-[white]">
                   <CardHeader>
                     <div className="flex items-center gap-4">
                       <Avatar>

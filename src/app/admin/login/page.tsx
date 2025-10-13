@@ -1,4 +1,8 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -6,7 +10,61 @@ import { Button } from "@/components/ui/button";
 import Image from 'next/image';
 import logo from '../../../img/logo_png.png';
 
+import { db } from '@/firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore'; 
+import bcrypt from 'bcryptjs';
+
 export default function AdminLoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+    setError('');
+
+    if (!username || !password) {
+      setError('Please enter both username and password.');
+      setIsLoggingIn(false);
+      return;
+    }
+
+    try {
+      const adminDocRef = doc(db, 'admins', username);
+      const adminDocSnap = await getDoc(adminDocRef);
+
+      if (!adminDocSnap.exists()) {
+        setError('Invalid user. Please try again.');
+        setIsLoggingIn(false);
+        return;
+      }
+
+      // User found, now check the password
+      const adminData = adminDocSnap.data();
+      const passwordHash = adminData.passwordHash;
+
+      // Compare the entered password with the stored hash
+      const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
+
+      if (isPasswordCorrect) {
+        // SUCCESS: Redirect to the dashboard
+        router.push('/admin/dashboard');
+      } else {
+        // Password does not match
+        setError('Invalid credentials. Please try again.');
+      }
+
+    } catch (err) {
+      console.error("Login error:", err);
+      setError('An unexpected error occurred. Please try again later.');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md space-y-8">
@@ -24,17 +82,35 @@ export default function AdminLoginPage() {
             <CardDescription>Enter your credentials to continue.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form action="/admin/dashboard" className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4">
+              {/* 3. Update the Username field */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="admin@example.com" required defaultValue="admin@example.com" />
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text" // Change type from 'email' to 'text'
+                  placeholder="admin"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
               </div>
+              {/* Password field remains the same */}
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required defaultValue="password" />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
-              <Button type="submit" className="w-full">
-                Login
+
+              {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+
+              <Button type="submit" className="w-full" disabled={isLoggingIn}>
+                {isLoggingIn ? 'Logging in...' : 'Login'}
               </Button>
             </form>
           </CardContent>

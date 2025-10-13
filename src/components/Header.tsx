@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -28,7 +27,14 @@ export function Header() {
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
           <Image src={logo} alt="No Rush logo" width={40} height={40} quality={100} />
-          <span>No Rush</span>
+          {/* --- MODIFICATION START (Desktop View) --- */}
+          <div>
+            <span className="leading-none">No Rush</span>
+            <p className="text-xs font-normal text-muted-foreground -mt-1 leading-tight">
+              Servicing New York City
+            </p>
+          </div>
+          {/* --- MODIFICATION END (Desktop View) --- */}
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           {navItems.map((item) => (
@@ -64,7 +70,14 @@ export function Header() {
               <div className="flex flex-col gap-6 p-6">
                 <Link href="/" className="flex items-center gap-2 font-bold text-lg" onClick={() => setIsMenuOpen(false)}>
                   <Image src={logo} alt="No Rush logo" width={32} height={32} />
-                  <span>No Rush</span>
+                  {/* --- MODIFICATION START (Mobile View) --- */}
+                  <div>
+                    <span className="leading-none">No Rush</span>
+                    <p className="text-xs font-normal text-muted-foreground -mt-1 leading-tight">
+                      Servicing New York City
+                    </p>
+                  </div>
+                  {/* --- MODIFICATION END (Mobile View) --- */}
                 </Link>
                 <nav className="grid gap-4">
                   {navItems.map((item) => (
