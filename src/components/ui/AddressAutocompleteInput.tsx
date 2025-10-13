@@ -16,12 +16,13 @@ const NYC_BOUNDS = {
 interface AddressAutocompleteInputProps {
   onAddressSelect: (address: string) => void;
   initialValue?: string;
+  apiKey: string | null;
 }
 
-export function AddressAutocompleteInput({ onAddressSelect, initialValue = '' }: AddressAutocompleteInputProps) {
+export function AddressAutocompleteInput({ onAddressSelect, initialValue = '', apiKey}: AddressAutocompleteInputProps) {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    googleMapsApiKey: apiKey || "",
     libraries: ['places'],
   });
 

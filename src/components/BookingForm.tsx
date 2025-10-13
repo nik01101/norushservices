@@ -19,9 +19,10 @@ interface BookingFormProps {
   service: Service & { id: string }; 
   timeSlots: TimeSlot[];
   disabledDates: Date[];
+  googleMapsApiKey: string | null;
 }
 
-export function BookingForm({ service, timeSlots, disabledDates }: BookingFormProps) {
+export function BookingForm({ service, timeSlots, disabledDates, googleMapsApiKey}: BookingFormProps) {
 const router = useRouter();
 const { toast } = useToast();
 
@@ -161,7 +162,7 @@ if (!date) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
-                <AddressAutocompleteInput onAddressSelect={handleAddressSelect} />
+                <AddressAutocompleteInput onAddressSelect={handleAddressSelect} apiKey={googleMapsApiKey}/>
             </div>
             <Button type="submit" className="w-full h-12 text-lg" disabled={isBooking}>
               {isBooking ? 'Booking...' : `Book for $${service.price}/hr`}

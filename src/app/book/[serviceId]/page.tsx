@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { BookingForm } from '@/components/BookingForm';
 import type { Service, AvailabilitySettings, TimeSlot } from '@/lib/types';
+import { getGoogleMapsApiKey } from '@/lib/server-utils';
 
 // Import all necessary Firestore functions
 import { db } from '@/firebaseConfig';
@@ -60,12 +61,17 @@ export default async function BookingPage({ params }: { params: { serviceId: str
     "[SERVER LOG] Checking Google Maps API Key:", 
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   );
-  
-  // Fetch both the service and availability data concurrently for better performance
-  const [service, availability] = await Promise.all([
+  const [service, availability, googleMapsApiKey] = await Promise.all([
     getServiceByServiceId(params.serviceId),
-    getAvailability()
+    getAvailability(),
+    getGoogleMapsApiKey() // Fetch the API key from Secret Manager
   ]);
+  
+  if (!googleMapsApiKey) {
+    // Handle the case where the key couldn't be fetched
+    // You could show an error message or disable the address input.
+    console.error("CRITICAL: Google Maps API key is missing. Address input will not work.");
+  }
 
   return (
     <div className="bodybg min-h-screen">
@@ -89,6 +95,7 @@ export default async function BookingPage({ params }: { params: { serviceId: str
               service={service} 
               timeSlots={availability.timeSlots} 
               disabledDates={availability.disabledDates}
+              googleMapsApiKey={googleMapsApiKey}
             />
           </CardContent>
         </Card>
