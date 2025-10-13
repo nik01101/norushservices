@@ -18,6 +18,7 @@ export function ContactForm() {
     // 2. Add state for each input field
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +33,7 @@ export function ContactForm() {
             await addDoc(messagesCollectionRef, {
                 name: name,
                 email: email,
+                phone: phone,
                 message: message,
                 status: 'unread', // Useful for the admin dashboard
                 createdAt: serverTimestamp(), // For sorting by newest first
@@ -47,6 +49,7 @@ export function ContactForm() {
             // 5. Reset the form fields by clearing the state
             setName('');
             setEmail('');
+            setPhone('');
             setMessage('');
 
         } catch (error) {
@@ -81,6 +84,16 @@ export function ContactForm() {
                     required 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input 
+                    id="phone" 
+                    type="tel" // Use 'tel' for better mobile experience
+                    required 
+                    value={phone} 
+                    onChange={(e) => setPhone(e.target.value)} 
                 />
             </div>
             <div className="space-y-2">

@@ -24,6 +24,7 @@ interface ContactMessage {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   message: string;
   status: 'read' | 'unread';
   createdAt: Date;
@@ -209,21 +210,34 @@ const handleMarkAsRead = async (messageId: string) => {
                   <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
                       {messages.map(msg => (
                           <Card key={msg.id} className={msg.status === 'unread' ? 'border-primary' : ''}>
-                              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                  <CardTitle className="text-sm font-medium">
-                                      From: {msg.name} ({msg.email})
-                                  </CardTitle>
-                                  <span className="text-xs text-muted-foreground">
-                                      {format(msg.createdAt, 'MMM d, p')}
-                                  </span>
+                              <CardHeader className="flex flex-row items-start justify-between pb-2">
+                                  <div>
+                                      <CardTitle className="text-base font-medium">
+                                          From: {msg.name}
+                                      </CardTitle>
+                                      <div className="text-sm text-muted-foreground">{msg.email}</div>
+                                      {msg.phone && (
+                                          <div className="text-sm text-muted-foreground">{msg.phone}</div>
+                                      )}
+                                  </div>
+                                  <div className="flex flex-col items-end gap-2">
+                                      {msg.status === 'unread' ? (
+                                          <Badge>Unread</Badge>
+                                      ) : (
+                                          <Badge variant="secondary">Read</Badge>
+                                      )}
+                                      <span className="text-xs text-muted-foreground">
+                                          {format(msg.createdAt, 'MMM d, p')}
+                                      </span>
+                                  </div>
                               </CardHeader>
                               <CardContent>
-                                  <p className="text-sm text-foreground">{msg.message}</p>
+                                  <p className="text-sm text-foreground whitespace-pre-wrap">{msg.message}</p>
                                   {msg.status === 'unread' && (
                                       <Button 
                                           variant="outline" 
                                           size="sm" 
-                                          className="mt-2"
+                                          className="mt-4"
                                           onClick={() => handleMarkAsRead(msg.id)}
                                       >
                                           <CheckCircle className="mr-2 h-4 w-4" /> Mark as Read

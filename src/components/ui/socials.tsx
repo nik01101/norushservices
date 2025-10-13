@@ -99,18 +99,18 @@ export function SocialMedia() {
         {
             id: 1,
             platform: 'Instagram',
-            handle: '@norushfurniture',
+            handle: '@norushnyc',
             icon: Instagram,
-            link: 'https://www.instagram.com/norushfurniture/',
+            link: 'https://www.instagram.com/norushnyc?igsh=MXJxNWw4ajdjd3A0aQ==',
             alt: 'Instagram',
             className: 'lg:row-start-2 lg:col-start-1'
         },
         {
             id: 2,
             platform: 'Facebook',
-            handle: '@norushfurniture',
+            handle: '@norushnyc',
             icon: Facebook,
-            link: 'https://www.facebook.com/norushfurniture/',
+            link: 'https://www.facebook.com/',
             alt: 'Facebook',
             className: 'lg:row-start-1 lg:col-start-2'
         },
