@@ -37,6 +37,12 @@ const handleAddressSelect = (selectedAddress: string) => {
   setAddress(selectedAddress);
 };
 
+const handleDateSelect = (selectedDate: Date | undefined) => {
+  if (selectedDate) {
+    setDate(selectedDate);
+  }
+};
+
 const modifiersClassNames = {
   unavailable: 'bg-muted text-muted-foreground !line-through opacity-50 cursor-not-allowed',
 };
@@ -168,13 +174,13 @@ if (!date) {
             <Card>
               <CardContent className="p-2 flex justify-center">
                 <Calendar
-                 mode="single"
-                 selected={date}
-                 onSelect={setDate}
-                 initialFocus
-                 disabled={isDateUnavailable}
-                 modifiers={modifiers}
-                 modifiersClassNames={modifiersClassNames}
+                  mode="single"
+                  selected={date}
+                  onSelect={handleDateSelect} 
+                  initialFocus
+                  disabled={isDateUnavailable}
+                  modifiers={modifiers}
+                  modifiersClassNames={modifiersClassNames}
                 />
               </CardContent>
             </Card>
