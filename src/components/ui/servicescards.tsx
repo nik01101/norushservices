@@ -13,7 +13,7 @@ import movingImage from '../../img/landing/4.png';
 const localServices = [
     { id: 1, serviceId: 'furniture-assembly', name: 'Furniture Assembly', description: 'Expert assembly for your flat-pack furniture. Quick, reliable, and hassle-free.', price: 50, imageUrl: furnitureImage, imageHint: 'furniture assembly', extraFee: 'The minimum service time is 2 hours.'},
     { id: 2, serviceId: 'tv-mounting', name: 'Mounting', description: 'Secure and professional mounting services for any wall type.', price: 50, imageUrl: mountingImage, imageHint: 'living room'},
-    { id: 3, serviceId: 'trash-removal', name: 'Trash Removal Furniture', description: 'Efficient removal of unwanted furniture and trash. Extra fee may apply based on weight.', price: 50, imageUrl: trashImage, imageHint: 'trash furniture removal', extraFee: 'Extra fee depending on weight'},
+    { id: 3, serviceId: 'trash-removal', name: 'Trash Removal Service', description: 'Efficient removal of unwanted furniture and trash. Extra fee may apply based on weight.', price: 50, imageUrl: trashImage, imageHint: 'trash furniture removal', extraFee: 'Extra fee depending on weight'},
     { id: 4, serviceId: 'local-moving', name: 'Moving', description: 'Efficient and careful moving services for your home or office within the city.', price: 80, imageUrl: movingImage, imageHint: 'moving boxes'},
 ];
 
