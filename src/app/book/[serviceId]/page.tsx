@@ -56,6 +56,10 @@ async function getAvailability(): Promise<{ timeSlots: TimeSlot[], disabledDates
 
 // --- The Main Page Component ---
 export default async function BookingPage({ params }: { params: { serviceId: string } }) {
+  console.log(
+    "[SERVER LOG] Checking Google Maps API Key:", 
+    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  );
   
   // Fetch both the service and availability data concurrently for better performance
   const [service, availability] = await Promise.all([
