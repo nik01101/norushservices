@@ -1,29 +1,6 @@
-# Settings for Backend (on Cloud Run).
-# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
-runConfig:
-  minInstances: 0
-  environmentVariables:
-    # We are creating an environment variable named NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-    # The same name as in your .env.local for code consistency.
-    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
-      # This tells App Hosting to get the value from Secret Manager.
-      secret: GOOGLE_MAPS_API_KEY # This is the name of the secret you created in Step 1.
-  # maxInstances: 100
-  # concurrency: 80
-  # cpu: 1
-  # memoryMiB: 512
+specVersion: v1alpha1
 
-# Environment variables and secrets.
-# env:
-  # Configure environment variables.
-  # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
-  # - variable: MESSAGE
-  #   value: Hello world!
-  #   availability:
-  #     - BUILD
-  #     - RUNTIME
-
-  # Grant access to secrets in Cloud Secret Manager.
-  # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
-  # - variable: MY_SECRET
-  #   secret: mySecretRef
+# The runConfig and buildConfig can be empty for this step.
+# The important thing is that we are NOT trying to access a secret.
+runConfig: {}
+buildConfig: {}
