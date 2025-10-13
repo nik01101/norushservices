@@ -1,5 +1,14 @@
 specVersion: v1alpha1
+
 runConfig:
+  # Adding a CPU setting to see if it forces the parser to process this section.
+  # The default is 1, so this doesn't change performance.
+  cpu: 1 
+  
+  # Your environment variable configuration remains the same.
   environmentVariables:
-    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: "THIS_IS_A_TEST_VALUE_FROM_YAML"
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
+      secret: GOOGLE_MAPS_API_KEY
+
+# The buildConfig can remain empty as Next.js is auto-detected.
 buildConfig: {}
