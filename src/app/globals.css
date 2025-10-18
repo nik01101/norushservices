@@ -90,13 +90,13 @@
   }
   h1, h2, h3, .font-headline {
     font-family: var(--font-akira), sans-serif;
-    color: black;
+    color: #402D29;
   }
   p{
     font-family: var(--font-parkinsans), sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
-    color: black;
+    color: hsl(var(--accent-foreground));
   }
 
   .btnbg{
