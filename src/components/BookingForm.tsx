@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Service, TimeSlot } from '@/lib/types';
 import { db } from '@/firebaseConfig'; 
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { Info } from 'lucide-react';
 import { AddressAutocompleteInput } from '@/components/ui/AddressAutocompleteInput';
 
 
@@ -156,7 +157,7 @@ if (!date) {
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" placeholder="john.doe@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
-             <div className="space-y-2">
+            <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input id="phone" type="tel" placeholder="(123) 456-7890" value={phone} onChange={(e) => setPhone(e.target.value)} required />
               </div>
@@ -164,8 +165,16 @@ if (!date) {
                 <Label htmlFor="address">Address</Label>
                 <AddressAutocompleteInput onAddressSelect={handleAddressSelect} apiKey={googleMapsApiKey}/>
             </div>
+
+            <div className="flex items-start space-x-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+              <Info className="h-5 w-5 flex-shrink-0 mt-0.5" />
+              <p>
+                Please note: This is a booking request. We will contact you via phone or email to confirm the final appointment details and availability.
+              </p>
+            </div>
+            
             <Button type="submit" className="w-full h-12 text-lg" disabled={isBooking}>
-              {isBooking ? 'Booking...' : `Book for $${service.price}/hr`}
+              {isBooking ? 'Booking...' : `Book for ${service.price}`}
             </Button>
         </form>
 
