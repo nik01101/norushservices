@@ -18,6 +18,7 @@
     --muted: 37 54% 86%;
     --muted-foreground: 10 21% 40%;
     --accent: 28 68% 61%; /* persian-orange */
+    --accent2: 28 68% 71%; /* persian-orange */
     --accent-foreground: 10 21% 29%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -90,13 +91,13 @@
   }
   h1, h2, h3, .font-headline {
     font-family: var(--font-akira), sans-serif;
-    color: hsl(var(--foreground));
+    color: black;
   }
   p{
     font-family: var(--font-parkinsans), sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
-    color: hsl(var(--foreground));
+    color: black;
   }
 
   .btnbg{

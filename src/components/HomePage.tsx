@@ -28,7 +28,7 @@ export function HomePage() {
                 <h1 className="text-5xl sm:text-5xl xl:text-8xl/none">
                   Reliable Help, Just a Click Away
                 </h1>
-                <p className="md:text-xl text-foreground">
+                <p className="md:text-xl text-[black]">
                   No Rush offers professional furniture assembly, mounting, and moving services to make your life easier.
                 </p>
               </div>
