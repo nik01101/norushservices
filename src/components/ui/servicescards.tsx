@@ -54,7 +54,7 @@ export function ServicesCards() {
                                 <p className="mt-2 text-sm text-accent">{service.extraFee}</p>
                             )}
                             <div className="mt-6 flex justify-between items-end">
-                                <p className="text-4xl sm:text-3xl font-bold text-accent">{service.price}</p>
+                                <p className="text-4xl sm:text-3xl font-bold text-[#bd702d]">{service.price}</p>
                                 <Button asChild className="bg-[#bd702d] text-accent-foreground rounded-lg hover:bg-accent/90">
                                 <Link href={`/book/${service.serviceId}`}>
                                     Book Now <ArrowRight className="ml-2 h-4 w-4" />
