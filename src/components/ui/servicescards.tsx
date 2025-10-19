@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import furnitureImage from '../../img/landing/3.png';
 import mountingImage from '../../img/landing/2.png';
-import trashImage from '../../img/landing/4.png';
+import trashImage from '../../img/landing/trashremoval.png';
 import movingImage from '../../img/landing/1.png';
 
 const localServices = [
