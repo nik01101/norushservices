@@ -8,7 +8,7 @@ import { ArrowRight } from 'lucide-react';
 import furnitureImage from '../../img/landing/3.png';
 import mountingImage from '../../img/landing/2.png';
 import trashImage from '../../img/landing/4.png';
-import movingImage from '../../img/landing/1.jpg';
+import movingImage from '../../img/landing/1.png';
 
 const localServices = [
     { id: 1, serviceId: 'furniture-assembly', name: 'Furniture Assembly', description: 'Expert assembly for your flat-pack furniture. Quick, reliable, and hassle-free.', price: '$50/Hr', imageUrl: furnitureImage, imageHint: 'furniture assembly', extraFee: 'The minimum service time is 2 hours.'},
