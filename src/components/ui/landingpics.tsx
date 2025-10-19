@@ -3,10 +3,10 @@
 import {useRef}  from "react"
 import Autoplay from "embla-carousel-autoplay"
 import Image from 'next/image';
-import furnitureImage from '../../img/landing/1.png';
+import furnitureImage from '../../img/landing/3.png';
 import mountingImage from '../../img/landing/2.png';
-import trashImage from '../../img/landing/3.png';
-import movingImage from '../../img/landing/4.png';
+import trashImage from '../../img/landing/4.png';
+import movingImage from '../../img/landing/1.jpg';
 
 import {
     Carousel,
