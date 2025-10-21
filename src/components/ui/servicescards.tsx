@@ -51,7 +51,7 @@ export function ServicesCards() {
                             <h3 className="font-headline text-3xl font-[Akira] uppercase text-secondary-foreground leading-tight">{service.name}</h3>
                             <p className="mt-2 text-secondary-foreground/90 flex-grow">{service.description}</p>
                             {service.extraFee && (
-                                <p className="mt-2 text-sm text-accent">{service.extraFee}</p>
+                                <p className="mt-2 text-sm text-[#bd702d]">{service.extraFee}</p>
                             )}
                             <div className="mt-6 flex justify-between items-end">
                                 <p className="text-4xl sm:text-3xl font-bold text-[#bd702d]">{service.price}</p>
