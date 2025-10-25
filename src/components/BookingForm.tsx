@@ -11,24 +11,26 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import type { Service, TimeSlot } from '@/lib/types';
 import { db } from '@/firebaseConfig'; 
-import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { Info } from 'lucide-react';
+import { collection, addDoc, serverTimestamp, Timestamp, getDoc, doc } from 'firebase/firestore';
+import { Info, Loader2 } from 'lucide-react';
 import { AddressAutocompleteInput } from '@/components/ui/AddressAutocompleteInput';
-
+import { format } from 'date-fns';
 
 interface BookingFormProps {
   service: Service & { id: string }; 
-  timeSlots: TimeSlot[];
+  defaultTimeSlots: TimeSlot[]; 
   disabledDates: Date[];
   googleMapsApiKey: string | null;
 }
 
-export function BookingForm({ service, timeSlots, disabledDates, googleMapsApiKey}: BookingFormProps) {
+export function BookingForm({ service, defaultTimeSlots, disabledDates, googleMapsApiKey}: BookingFormProps) {
 const router = useRouter();
 const { toast } = useToast();
 
 const [date, setDate] = useState<Date | undefined>(); 
 const [selectedTime, setSelectedTime] = useState<string | undefined>();
+const [timeSlotsForSelectedDay, setTimeSlotsForSelectedDay] = useState<TimeSlot[]>(defaultTimeSlots);
+const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false);
 const [name, setName] = useState('');
 const [email, setEmail] = useState('');
 const [phone, setPhone] = useState('');
@@ -53,13 +55,35 @@ useEffect(() => {
   setDate(new Date());
 }, []);
 
+useEffect(() => {
+  if (!date) return;
+
+  const fetchAvailabilityForDate = async () => {
+    setIsLoadingTimeSlots(true);
+    setSelectedTime(undefined); 
+
+    const dateId = format(date, 'yyyy-MM-dd');
+    const dayDocRef = doc(db, 'daily_availability', dateId);
+    const docSnap = await getDoc(dayDocRef);
+
+    if (docSnap.exists() && !docSnap.data().isBlocked) {
+      setTimeSlotsForSelectedDay(docSnap.data().timeSlots);
+    } else {
+      setTimeSlotsForSelectedDay(defaultTimeSlots);
+    }
+    setIsLoadingTimeSlots(false);
+  };
+
+  fetchAvailabilityForDate();
+}, [date, defaultTimeSlots]);
+
 const isDateUnavailable = (date: Date) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0); 
 
-  return date < today || disabledDates.some(disabledDate => 
-    disabledDate.toDateString() === date.toDateString()
-  );
+  return date < today || disabledDates.some(disabledDate => {
+    return new Date(disabledDate).toDateString() === date.toDateString();
+  });
 }
 
 const modifiers = {
@@ -123,12 +147,10 @@ const handleBooking = async (e: React.FormEvent) => {
 };
 
 if (!date) {
-  // Render a skeleton or a simple loading message for the calendar part
-  // while the client-side `useEffect` runs.
+
   return (
     <div className="grid md:grid-cols-2 gap-12">
       <form className="space-y-6">
-        {/* ... you can show a skeleton of the form here ... */}
       </form>
       <div className="space-y-8 animate-pulse">
           <div>
@@ -197,20 +219,26 @@ if (!date) {
           </div>
           <div>
             <h2 className="font-bold text-xl mb-4 font-headline">2. Select a Time</h2>
-            <div className="grid grid-cols-3 gap-2">
-              {timeSlots.map((slot: TimeSlot) => (
-                <Button
-                    key={slot.time}
-                    variant={selectedTime === slot.time ? "default" : "secondary"}
-                    onClick={() => setSelectedTime(slot.time)}
-                    disabled={!slot.available}
-              >
-                  {slot.time}
-                </Button>
-              ))}
+            {isLoadingTimeSlots ? (
+              <div className="flex justify-center items-center h-24">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-2">
+                {timeSlotsForSelectedDay.map((slot: TimeSlot) => (
+                  <Button
+                      key={slot.time}
+                      variant={selectedTime === slot.time ? "default" : "secondary"}
+                      onClick={() => setSelectedTime(slot.time)}
+                      disabled={!slot.available}
+                  >
+                    {slot.time}
+                  </Button>
+                ))}
+              </div>
+            )}
             </div>
           </div>
         </div>
-    </div>
   );
 }

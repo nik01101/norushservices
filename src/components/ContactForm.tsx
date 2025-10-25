@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-
-// 1. Import Firestore functions
 import { db } from '@/firebaseConfig';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -15,7 +13,6 @@ export function ContactForm() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
-    // 2. Add state for each input field
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -26,27 +23,23 @@ export function ContactForm() {
         setIsLoading(true);
 
         try {
-            // 3. Create a reference to your new collection
             const messagesCollectionRef = collection(db, 'contact_messages');
 
-            // 4. Add a new document with the form data
             await addDoc(messagesCollectionRef, {
                 name: name,
                 email: email,
                 phone: phone,
                 message: message,
-                status: 'unread', // Useful for the admin dashboard
-                createdAt: serverTimestamp(), // For sorting by newest first
+                status: 'unread', 
+                createdAt: serverTimestamp(), 
             });
 
-            // Show success toast
             toast({
                 title: 'Message Sent!',
                 description: "Thanks for reaching out. We'll get back to you soon.",
                 className: 'bg-accent text-accent-foreground',
             });
             
-            // 5. Reset the form fields by clearing the state
             setName('');
             setEmail('');
             setPhone('');
@@ -65,7 +58,6 @@ export function ContactForm() {
     };
 
     return (
-        // 6. Connect state to the JSX inputs
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
@@ -90,7 +82,7 @@ export function ContactForm() {
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input 
                     id="phone" 
-                    type="tel" // Use 'tel' for better mobile experience
+                    type="tel" 
                     required 
                     value={phone} 
                     onChange={(e) => setPhone(e.target.value)} 

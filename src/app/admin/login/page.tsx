@@ -42,18 +42,14 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // User found, now check the password
       const adminData = adminDocSnap.data();
       const passwordHash = adminData.passwordHash;
 
-      // Compare the entered password with the stored hash
       const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
 
       if (isPasswordCorrect) {
-        // SUCCESS: Redirect to the dashboard
         router.push('/admin/dashboard');
       } else {
-        // Password does not match
         setError('Invalid credentials. Please try again.');
       }
 
@@ -83,19 +79,17 @@ export default function AdminLoginPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
-              {/* 3. Update the Username field */}
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
-                  type="text" // Change type from 'email' to 'text'
+                  type="text" 
                   placeholder="admin"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
-              {/* Password field remains the same */}
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
