@@ -16,7 +16,7 @@ import { format } from 'date-fns';
 import { Mail, Trash2, CheckCircle, ChevronLeft,ChevronRight   } from 'lucide-react'; 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { db } from '@/firebaseConfig';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, Timestamp, setDoc, getDocs, where, limit, startAfter, endBefore, limitToLast } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, Timestamp, setDoc, getDocs,getDoc,  where, limit, startAfter, endBefore, limitToLast } from 'firebase/firestore';
 
 interface ContactMessage {
   id: string;
