@@ -387,7 +387,6 @@ const handleUpdateStatus = async (booking: Booking, status: 'Confirmed' | 'Pendi
                             <span className="font-bold md:hidden">Service: </span>
                             <div className="font-medium inline md:block">{booking.serviceName}</div>
                             <div className="text-sm text-muted-foreground pl-4 md:pl-0">
-                              {/* Display Address */}
                               <div>{booking.customerAddress}</div> 
                               {booking.additionalInfo && (
                                 <p className="text-xs italic mt-1">"{booking.additionalInfo}"</p>
@@ -441,7 +440,7 @@ const handleUpdateStatus = async (booking: Booking, status: 'Confirmed' | 'Pendi
                   variant="outline"
                   size="sm"
                   onClick={() => fetchBookings('prev')}
-                  disabled={page <= 1} // Disable if on the first page
+                  disabled={page <= 1} 
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
                   Previous
@@ -450,7 +449,6 @@ const handleUpdateStatus = async (booking: Booking, status: 'Confirmed' | 'Pendi
                   variant="outline"
                   size="sm"
                   onClick={() => fetchBookings('next')}
-                  // A simple way to know if there's a next page is if we got a full page of results
                   disabled={bookings.length < bookingsPerPage}
                 >
                   Next
