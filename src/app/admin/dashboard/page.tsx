@@ -13,10 +13,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
-import { Mail, Trash2, CheckCircle } from 'lucide-react'; 
+import { Mail, Trash2, CheckCircle, ChevronLeft,ChevronRight   } from 'lucide-react'; 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { db } from '@/firebaseConfig';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, Timestamp, setDoc,getDoc, where } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, Timestamp, setDoc, getDocs, where, limit, startAfter, endBefore, limitToLast } from 'firebase/firestore';
 
 interface ContactMessage {
   id: string;
@@ -33,7 +33,9 @@ interface Booking {
   customerEmail: string;  
   customerPhone: string;
   serviceName: string;
-  bookingDate: Date; 
+  bookingDate: Date;
+  additionalInfo?: string;
+  customerAddress: string; 
   status: 'Confirmed' | 'Pending' | 'Cancelled';
 }
 interface TimeSlot {
@@ -59,31 +61,60 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(true);
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(true);
+  const [lastVisible, setLastVisible] = useState<any>(null); // Stores the last document of the current page
+  const [firstVisible, setFirstVisible] = useState<any>(null); // Stores the first document of the current page
+  const [page, setPage] = useState(1);
+  const bookingsPerPage = 10;
 
   const [reschedulingBooking, setReschedulingBooking] = useState<Booking | null>(null);
   const [timeSlotsForReschedule, setTimeSlotsForReschedule] = useState<TimeSlot[]>([]);
   const [newDate, setNewDate] = useState<Date | undefined>(undefined);
   const [newTime, setNewTime] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    const bookingsQuery = query(collection(db, 'bookings'), orderBy('bookingDate', 'asc'));
-    
-    const unsubscribe = onSnapshot(bookingsQuery, (querySnapshot) => {
-      const bookingsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        customerEmail: doc.data().customerEmail, 
-        customerPhone: doc.data().customerPhone,
-        ...doc.data(),
-        bookingDate: (doc.data().bookingDate as Timestamp).toDate(), 
-      } as Booking));
-      setBookings(bookingsData);
+  const fetchBookings = (direction: 'next' | 'prev' | 'initial' = 'initial') => {
+    setIsLoadingBookings(true);
+
+    let q = query(
+      collection(db, 'bookings'), 
+      orderBy('bookingDate', 'asc')
+    );
+
+    if (direction === 'next' && lastVisible) {
+      q = query(q, startAfter(lastVisible), limit(bookingsPerPage));
+      setPage(prev => prev + 1);
+    } else if (direction === 'prev' && firstVisible) {
+      q = query(q, endBefore(firstVisible), limitToLast(bookingsPerPage));
+      setPage(prev => prev - 1);
+    } else { // Initial fetch
+      q = query(q, limit(bookingsPerPage));
+      setPage(1);
+    }
+
+    getDocs(q).then((querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const bookingsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          bookingDate: (doc.data().bookingDate as Timestamp).toDate(),
+        } as Booking));
+        
+        setBookings(bookingsData);
+        setFirstVisible(querySnapshot.docs[0]);
+        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      } else if (direction !== 'initial') {
+        if (direction === 'next') setPage(prev => prev - 1);
+        if (direction === 'prev') setPage(prev => prev + 1);
+        toast({ title: "No more bookings to show.", variant: 'destructive' });
+      }
       setIsLoadingBookings(false);
     });
+  };
 
-    return () => unsubscribe(); 
+  useEffect(() => {
+    fetchBookings('initial');
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     const unsub = onSnapshot(doc(db, 'availability', 'settings'), (docSnap) => {
       if (docSnap.exists()) {
         setDefaultTimeSlots(docSnap.data().timeSlots || []);
@@ -200,15 +231,19 @@ const handleMarkAsRead = async (messageId: string) => {
 };
 
 
-  const handleUpdateStatus = async (bookingId: string, status: 'Confirmed' | 'Pending' | 'Cancelled') => {
-    const bookingDocRef = doc(db, 'bookings', bookingId);
-    try {
-      await updateDoc(bookingDocRef, { status });
-      toast({ title: 'Success!', description: `Booking status updated to ${status}.` });
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to update booking status.', variant: 'destructive' });
-    }
-  };
+const handleUpdateStatus = async (booking: Booking, status: 'Confirmed' | 'Pending' | 'Cancelled') => {
+  // Use booking.id to get the document ID from the object
+  const bookingDocRef = doc(db, 'bookings', booking.id); 
+  
+  try {
+    await updateDoc(bookingDocRef, { status });
+    toast({ title: 'Success!', description: `Booking status updated to ${status}.` });
+
+  } catch (error) {
+    console.error("Error updating status or sending email:", error);
+    toast({ title: 'Error', description: 'Failed to update booking status.', variant: 'destructive' });
+  }
+};
 
   const openRescheduleDialog = (booking: Booking) => {
     setReschedulingBooking(booking);
@@ -323,42 +358,107 @@ const handleMarkAsRead = async (messageId: string) => {
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader></TableHeader>
+                    <TableHeader>
+                      <TableRow className="hidden md:table-row">
+                        <TableHead>Customer & Contact</TableHead>
+                        <TableHead>Service & Address</TableHead>
+                        <TableHead>Date & Time</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead><span className="sr-only">Actions</span></TableHead>
+                      </TableRow>
+                    </TableHeader>
                     <TableBody>
                       {bookings.map((booking) => (
-                        <TableRow key={booking.id}>
-                          <TableCell>{booking.customerName}</TableCell>
-                          <TableCell>{booking.serviceName}</TableCell>
-                          <TableCell>
-                            <div className="text-sm text-muted-foreground hidden md:block">
-                              {booking.customerEmail}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {booking.customerPhone}
+                        <TableRow 
+                          key={booking.id} 
+                          className="block md:table-row border-b md:border-b-0 mb-4 md:mb-0"
+                        >
+
+                          <TableCell className="block md:table-cell">
+                            <span className="font-bold md:hidden">Customer: </span>
+                            <div className="font-medium inline md:block">{booking.customerName}</div>
+                            <div className="text-sm text-muted-foreground pl-4 md:pl-0">
+                              <div>{booking.customerEmail}</div>
+                              <div>{booking.customerPhone}</div>
                             </div>
                           </TableCell>
-                          <TableCell>{format(booking.bookingDate, 'MMM d, yyyy')} at {format(booking.bookingDate, 'p')}</TableCell>
-                          <TableCell><Badge variant={booking.status === 'Confirmed' ? 'default' : booking.status === 'Cancelled' ? 'destructive' : 'secondary'}>{booking.status}</Badge></TableCell>
-                          <TableCell>
+
+                          <TableCell className="block md:table-cell">
+                            <span className="font-bold md:hidden">Service: </span>
+                            <div className="font-medium inline md:block">{booking.serviceName}</div>
+                            <div className="text-sm text-muted-foreground pl-4 md:pl-0">
+                              {/* Display Address */}
+                              <div>{booking.customerAddress}</div> 
+                              {booking.additionalInfo && (
+                                <p className="text-xs italic mt-1">"{booking.additionalInfo}"</p>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="block md:table-cell">
+                            <span className="font-bold md:hidden">When: </span>
+                            <span className="text-sm">
+                              {format(booking.bookingDate, 'MMM d, yyyy')} at {format(booking.bookingDate, 'p')}
+                            </span>
+                          </TableCell>
+                          <TableCell className="block md:table-cell">
+                            <span className="font-bold md:hidden mr-2">Status: </span>
+                            <Badge variant={booking.status === 'Confirmed' ? 'default' : booking.status === 'Cancelled' ? 'destructive' : 'secondary'}>
+                              {booking.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="block md:table-cell text-right pr-2 md:pr-4">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Open menu</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(booking.id, 'Confirmed')}><Check className="mr-2 h-4 w-4"/>Confirm</DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(booking.id, 'Cancelled')}><X className="mr-2 h-4 w-4"/>Cancel</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(booking, 'Confirmed')}>
+                                  <Check className="mr-2 h-4 w-4"/>Confirm
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(booking, 'Cancelled')}>
+                                  <X className="mr-2 h-4 w-4"/>Cancel
+                                </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => openRescheduleDialog(booking)}>Reschedule</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openRescheduleDialog(booking)}>
+                                  Reschedule
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
+
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </div>
               )}
+              <div className="flex items-center justify-end space-x-2 py-4">
+                <span className="text-sm text-muted-foreground">Page {page}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchBookings('prev')}
+                  disabled={page <= 1} // Disable if on the first page
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchBookings('next')}
+                  // A simple way to know if there's a next page is if we got a full page of results
+                  disabled={bookings.length < bookingsPerPage}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
             </div>
+            
 
             <div id="availability" className="bg-background p-6 rounded-lg shadow-sm">
               <h2 className="text-2xl font-bold mb-4">Manage Daily Availability</h2>

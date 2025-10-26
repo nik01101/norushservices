@@ -14,10 +14,12 @@ export interface AvailabilitySettings {
 import { Timestamp } from 'firebase/firestore';
 
 export interface Booking {
-  id: string; // The Firestore document ID
+  id: string; 
   customerName: string;
   serviceName: string;
-  bookingDate: Timestamp | Date; // Comes as Timestamp, we'll convert to Date
+  bookingDate: Timestamp | Date;
+  customerAddress: string;
+  additionalInfo?: string; 
   status: 'Confirmed' | 'Pending' | 'Cancelled';
 }
 

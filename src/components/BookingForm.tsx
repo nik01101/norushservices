@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { Service, TimeSlot } from '@/lib/types';
 import { db } from '@/firebaseConfig'; 
@@ -30,6 +31,7 @@ const { toast } = useToast();
 const [date, setDate] = useState<Date | undefined>(); 
 const [selectedTime, setSelectedTime] = useState<string | undefined>();
 const [timeSlotsForSelectedDay, setTimeSlotsForSelectedDay] = useState<TimeSlot[]>(defaultTimeSlots);
+const [additionalInfo, setAdditionalInfo] = useState('');
 const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false);
 const [name, setName] = useState('');
 const [email, setEmail] = useState('');
@@ -120,6 +122,7 @@ const handleBooking = async (e: React.FormEvent) => {
       customerEmail: email,
       customerPhone: phone,
       customerAddress: address,
+      additionalInfo: additionalInfo,
       status: 'pending',
       createdAt: serverTimestamp(),
     };
@@ -186,6 +189,17 @@ if (!date) {
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
                 <AddressAutocompleteInput onAddressSelect={handleAddressSelect} apiKey={googleMapsApiKey}/>
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="additional-info">Additional Information (optional)</Label>
+                <Textarea 
+                    id="additional-info" 
+                    placeholder="e.g., specific IKEA model numbers, parking instructions, 2nd floor walk-up, etc." 
+                    value={additionalInfo} 
+                    onChange={(e) => setAdditionalInfo(e.target.value)}
+                    rows={4}
+                />
             </div>
 
             <div className="flex items-start space-x-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">

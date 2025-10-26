@@ -4,9 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookingForm } from '@/components/BookingForm';
-import type { Service, AvailabilitySettings, TimeSlot } from '@/lib/types';
+import type { Service } from '@/lib/types';
 import { getGoogleMapsApiKey } from '@/lib/server-utils';
-
 import { db } from '@/firebaseConfig';
 import { collection, query, where, getDocs, doc, getDoc, limit, Timestamp } from 'firebase/firestore';
 
