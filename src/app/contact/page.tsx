@@ -1,7 +1,13 @@
 
+import type { Metadata } from 'next';
 import { ContactForm } from '@/components/ContactForm';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Mail, Phone } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Get in touch with No Rush. Call (929) 637-2276 or send an inquiry for furniture assembly, mounting, and moving in NYC.',
+};
 
 export default function ContactPage() {
   return (

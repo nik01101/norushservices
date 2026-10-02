@@ -5,10 +5,13 @@ runConfig:
   # The default is 1, so this doesn't change performance.
   cpu: 1 
   
-  # Your environment variable configuration remains the same.
+  # Environment variables and secrets configuration
   environmentVariables:
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
       secret: GOOGLE_MAPS_API_KEY
+    RESEND_API_KEY:
+      secret: RESEND_API_KEY
+    ADMIN_NOTIFICATION_EMAIL: "[EMAIL_ADDRESS]"
 
 # The buildConfig can remain empty as Next.js is auto-detected.
 buildConfig: {}

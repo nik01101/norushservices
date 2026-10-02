@@ -9,13 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
 import logo from '../../../img/logo_png.png';
+import { Loader2 } from 'lucide-react';
 
-import { db } from '@/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore'; 
-import bcrypt from 'bcryptjs';
+import { auth } from '@/firebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function AdminLoginPage() {
-  const [username, setUsername] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -26,36 +26,35 @@ export default function AdminLoginPage() {
     setIsLoggingIn(true);
     setError('');
 
-    if (!username || !password) {
-      setError('Please enter both username and password.');
+    const trimmedIdentifier = identifier.trim();
+    if (!trimmedIdentifier || !password) {
+      setError('Please enter both email/username and password.');
       setIsLoggingIn(false);
       return;
     }
 
+    // Support both direct email or admin username (defaults to domain if no @)
+    const emailToUse = trimmedIdentifier.includes('@')
+      ? trimmedIdentifier
+      : `${trimmedIdentifier.toLowerCase()}@norushservices.com`;
+
     try {
-      const adminDocRef = doc(db, 'admins', username);
-      const adminDocSnap = await getDoc(adminDocRef);
-
-      if (!adminDocSnap.exists()) {
-        setError('Invalid user. Please try again.');
-        setIsLoggingIn(false);
-        return;
-      }
-
-      const adminData = adminDocSnap.data();
-      const passwordHash = adminData.passwordHash;
-
-      const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
-
-      if (isPasswordCorrect) {
-        router.push('/admin/dashboard');
+      await signInWithEmailAndPassword(auth, emailToUse, password);
+      router.push('/admin/dashboard');
+    } catch (err: any) {
+      console.error("Firebase Login error:", err);
+      const code = err?.code || '';
+      if (
+        code === 'auth/invalid-credential' ||
+        code === 'auth/user-not-found' ||
+        code === 'auth/wrong-password'
+      ) {
+        setError('Invalid credentials. Please verify your email/username and password.');
+      } else if (code === 'auth/too-many-requests') {
+        setError('Access temporarily disabled due to many failed login attempts. Please try again later.');
       } else {
-        setError('Invalid credentials. Please try again.');
+        setError(err.message || 'Login failed. Please check your credentials and try again.');
       }
-
-    } catch (err) {
-      console.error("Login error:", err);
-      setError('An unexpected error occurred. Please try again later.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -80,21 +79,21 @@ export default function AdminLoginPage() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="identifier">Email or Username</Label>
                 <Input
-                  id="username"
+                  id="identifier"
                   type="text" 
-                  placeholder="admin"
+                  placeholder="admin@norushservices.com"
                   required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
-                  type="password"
+                  type="password" 
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -104,7 +103,13 @@ export default function AdminLoginPage() {
               {error && <p className="text-sm font-medium text-destructive">{error}</p>}
 
               <Button type="submit" className="w-full" disabled={isLoggingIn}>
-                {isLoggingIn ? 'Logging in...' : 'Login'}
+                {isLoggingIn ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Logging in...
+                  </span>
+                ) : (
+                  'Login'
+                )}
               </Button>
             </form>
           </CardContent>

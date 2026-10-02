@@ -16,6 +16,7 @@ import { collection, addDoc, serverTimestamp, Timestamp, getDoc, doc } from 'fir
 import { Info, Loader2 } from 'lucide-react';
 import { AddressAutocompleteInput } from '@/components/ui/AddressAutocompleteInput';
 import { format } from 'date-fns';
+import { sendBookingConfirmationEmails } from '@/lib/email';
 
 interface BookingFormProps {
   service: Service & { id: string }; 
@@ -113,10 +114,11 @@ const handleBooking = async (e: React.FormEvent) => {
     if (period.toUpperCase() === 'AM' && hours === 12) hours = 0;
     bookingDateTime.setHours(hours, minutes, 0, 0);
 
+    const normalizedPrice = service.price ? service.price.replace(/^\$\$/, '$') : 'Fixed Rate';
     const newBookingData = {
       serviceId: service.id,
       serviceName: service.name,
-      servicePrice: service.price,
+      servicePrice: normalizedPrice,
       bookingDate: Timestamp.fromDate(bookingDateTime),
       customerName: name,
       customerEmail: email,
@@ -129,6 +131,21 @@ const handleBooking = async (e: React.FormEvent) => {
 
     const bookingsCollectionRef = collection(db, 'bookings');
     await addDoc(bookingsCollectionRef, newBookingData);
+
+    // Trigger email notifications (non-blocking to ensure fast user response)
+    sendBookingConfirmationEmails({
+      customerName: name,
+      customerEmail: email,
+      customerPhone: phone,
+      serviceName: service.name,
+      servicePrice: normalizedPrice,
+      formattedDate: format(bookingDateTime, 'EEEE, MMMM d, yyyy'),
+      formattedTime: selectedTime,
+      customerAddress: address,
+      additionalInfo: additionalInfo || undefined,
+    }).catch((emailErr) => {
+      console.warn('[EMAIL WARNING] Failed to send automated emails:', emailErr);
+    });
 
     toast({
       title: 'Booking Submitted!',
@@ -209,8 +226,14 @@ if (!date) {
               </p>
             </div>
             
-            <Button type="submit" className="w-full h-12 text-lg" disabled={isBooking}>
-              {isBooking ? 'Booking...' : `Book for ${service.price}`}
+            <Button type="submit" className="w-full h-12 text-lg font-semibold" disabled={isBooking}>
+              {isBooking ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" /> Submitting Request...
+                </span>
+              ) : (
+                `Book for ${service.price ? service.price.replace(/^\$\$/, '$') : 'Fixed Rate'}`
+              )}
             </Button>
         </form>
 

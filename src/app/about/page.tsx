@@ -1,6 +1,12 @@
 
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import rodo from '../../img/rodopic.jpg';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn the story behind No Rush, founded by Rodrigo to provide stress-free furniture assembly, mounting, and moving across NYC.',
+};
 
 export default function AboutPage() {
   return (

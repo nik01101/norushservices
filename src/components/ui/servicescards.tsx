@@ -32,38 +32,41 @@ export function ServicesCards() {
             </div>
             <div className="container mx-auto px-8 md:px-6 py-9">
                     <div className="grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4 justify-center">
-                        {services.map((service) => (
-                        <Card key={service.serviceId} className="mx-auto bg-secondary text-secondary-foreground rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm">
-                            <div className="p-2">
-                            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden transform-gpu [transform:translateZ(0)]">
-                            <Image
-                                src={service.imageUrl}
-                                alt={service.name}
-                                fill
-                                quality={85}
-                                placeholder="blur"
-                                className="object-cover"
-                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                            />
-                            </div>
-                            </div>
-                            <CardContent className="p-6 flex-grow flex flex-col">
-                            <h3 className="font-headline text-3xl font-[Akira] uppercase text-secondary-foreground leading-tight">{service.name}</h3>
-                            <p className="mt-2 text-secondary-foreground/90 flex-grow">{service.description}</p>
-                            {service.extraFee && (
-                                <p className="mt-2 text-sm text-[#bd702d]">{service.extraFee}</p>
-                            )}
-                            <div className="mt-6 flex justify-between items-end">
-                                <p className="text-4xl sm:text-3xl font-bold text-[#bd702d]">{service.price}</p>
-                                <Button asChild className="bg-[#bd702d] text-accent-foreground rounded-lg hover:bg-accent/90">
-                                <Link href={`/book/${service.serviceId}`}>
-                                    Book Now <ArrowRight className="ml-2 h-4 w-4" />
-                                </Link>
-                                </Button>
-                            </div>
-                            </CardContent>
-                        </Card>
-                        ))}
+                        {services.map((service) => {
+                          const displayPrice = service.price ? service.price.replace(/^\$\$/, '$') : 'Fixed Rate';
+                          return (
+                            <Card key={service.serviceId} className="mx-auto bg-secondary text-secondary-foreground rounded-3xl overflow-hidden flex flex-col shadow-lg border-none max-w-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                                <div className="p-2">
+                                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden transform-gpu [transform:translateZ(0)]">
+                                <Image
+                                    src={service.imageUrl}
+                                    alt={service.name}
+                                    fill
+                                    quality={85}
+                                    placeholder="blur"
+                                    className="object-cover transition-transform duration-300 hover:scale-105"
+                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                />
+                                </div>
+                                </div>
+                                <CardContent className="p-6 flex-grow flex flex-col">
+                                <h3 className="font-headline text-3xl font-[Akira] uppercase text-secondary-foreground leading-tight">{service.name}</h3>
+                                <p className="mt-2 text-secondary-foreground/90 flex-grow">{service.description}</p>
+                                {service.extraFee && (
+                                    <p className="mt-2 text-sm text-[#bd702d] font-medium">{service.extraFee}</p>
+                                )}
+                                <div className="mt-6 flex justify-between items-end">
+                                    <p className="text-4xl sm:text-3xl font-bold text-[#bd702d]">{displayPrice}</p>
+                                    <Button asChild className="bg-[#bd702d] text-accent-foreground rounded-lg hover:bg-accent/90 transition-transform active:scale-95">
+                                    <Link href={`/book/${service.serviceId}`}>
+                                        Book Now <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Link>
+                                    </Button>
+                                </div>
+                                </CardContent>
+                            </Card>
+                          );
+                        })}
                     </div>
                 </div>
         </section>

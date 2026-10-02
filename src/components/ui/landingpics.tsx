@@ -34,33 +34,38 @@ import {
                 <CarouselItem>
                     <Image
                       src={furnitureImage}
-                      alt="waawaaa"
+                      alt="Expert furniture assembly service by No Rush in New York City"
                       className="rounded-3xl mx-auto"
-                      quality="100"
+                      quality={90}
+                      priority
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                 </CarouselItem>
                 <CarouselItem>
                     <Image
                       src={mountingImage}
-                      alt="waawaaa"
+                      alt="Professional TV and wall mounting service in NYC"
                       className="rounded-3xl mx-auto"
-                      quality="100"
+                      quality={90}
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                 </CarouselItem>
                 <CarouselItem>
                     <Image
                       src={trashImage}
-                      alt="waawaaa"
+                      alt="Prompt furniture and trash removal service"
                       className="rounded-3xl mx-auto"
-                      quality="100"
+                      quality={90}
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                 </CarouselItem>
                 <CarouselItem>
                     <Image
                       src={movingImage}
-                      alt="waawaaa"
+                      alt="Local residential and office moving service in New York"
                       className="rounded-3xl mx-auto"
-                      quality="100"
+                      quality={90}
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                 </CarouselItem>
                 </CarouselContent>

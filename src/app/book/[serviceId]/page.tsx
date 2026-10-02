@@ -50,13 +50,28 @@ async function getAvailability() {
 }
 
 
-export default async function BookingPage({ params }: { params: { serviceId: string } }) {
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ serviceId: string }> }): Promise<Metadata> {
+  const { serviceId } = await params;
+  const formattedTitle = serviceId
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+  return {
+    title: `Book ${formattedTitle} | No Rush NYC`,
+    description: `Book reliable ${formattedTitle} in New York City with No Rush. Quick scheduling and transparent pricing.`,
+  };
+}
+
+export default async function BookingPage({ params }: { params: Promise<{ serviceId: string }> }) {
+  const { serviceId } = await params;
   console.log(
     "[SERVER LOG] Checking Google Maps API Key:", 
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   );
   const [service, availability, googleMapsApiKey] = await Promise.all([
-    getServiceByServiceId(params.serviceId),
+    getServiceByServiceId(serviceId),
     getAvailability(),
     getGoogleMapsApiKey() 
   ]);

@@ -2,21 +2,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { MoreHorizontal, Check, X, Loader2 } from 'lucide-react';
+import { MoreHorizontal, Check, X, Loader2, LogOut, ExternalLink, ShieldCheck, Mail, Trash2, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
-import { Mail, Trash2, CheckCircle, ChevronLeft,ChevronRight   } from 'lucide-react'; 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { db } from '@/firebaseConfig';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, Timestamp, setDoc, getDocs,getDoc,  where, limit, startAfter, endBefore, limitToLast } from 'firebase/firestore';
+import { db, auth } from '@/firebaseConfig';
+import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, Timestamp, setDoc, getDocs, getDoc, where, limit, startAfter, endBefore, limitToLast } from 'firebase/firestore';
 
 interface ContactMessage {
   id: string;
@@ -44,7 +46,33 @@ interface TimeSlot {
 }
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const { toast } = useToast();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.replace('/admin/login');
+      } else {
+        setCurrentUser(user);
+        setIsAuthChecking(false);
+      }
+    });
+    return () => unsubscribeAuth();
+  }, [router]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push('/admin/login');
+      toast({ title: 'Signed out successfully' });
+    } catch (err) {
+      console.error("Sign out error:", err);
+    }
+  };
+
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
@@ -292,12 +320,41 @@ const handleUpdateStatus = async (booking: Booking, status: 'Confirmed' | 'Pendi
     blocked: 'bg-muted text-muted-foreground !line-through opacity-50',
   };
 
+  if (isAuthChecking) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-muted/40 gap-4">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="text-muted-foreground text-sm font-medium">Verifying administrator session...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-muted/40">
       <div className="flex h-screen">
 
         <main className="flex-1 p-8 overflow-auto">
-          <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+              <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                Authenticated as: <span className="font-medium text-foreground">{currentUser?.email || 'Admin'}</span>
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/" target="_blank">
+                  <ExternalLink className="h-4 w-4 mr-1.5" />
+                  View Live Site
+                </Link>
+              </Button>
+              <Button variant="destructive" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-1.5" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
           <div id="messages" className="bg-background p-6 rounded-lg shadow-sm mb-8">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
                   <Mail /> Inbox
