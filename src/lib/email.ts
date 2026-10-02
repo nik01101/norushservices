@@ -28,6 +28,7 @@ export async function sendBookingConfirmationEmails(data: BookingEmailData) {
     return { success: false, reason: 'RESEND_API_KEY not configured' };
   }
 
+  try {
     const senderEmail = process.env.RESEND_FROM_EMAIL || 'No Rush <bookings@norushservices.com>';
     const adminNotificationEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'norushnyc@gmail.com';
 
