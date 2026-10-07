@@ -19,6 +19,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, Timestamp, setDoc, getDocs, getDoc, where, limit, startAfter, endBefore, limitToLast } from 'firebase/firestore';
+import { sendBookingStatusConfirmationEmail, sendBookingCancellationEmail } from '@/lib/email';
 
 interface ContactMessage {
   id: string;
@@ -260,12 +261,40 @@ const handleMarkAsRead = async (messageId: string) => {
 
 
 const handleUpdateStatus = async (booking: Booking, status: 'Confirmed' | 'Pending' | 'Cancelled') => {
-  // Use booking.id to get the document ID from the object
   const bookingDocRef = doc(db, 'bookings', booking.id); 
-  
+
   try {
     await updateDoc(bookingDocRef, { status });
     toast({ title: 'Success!', description: `Booking status updated to ${status}.` });
+
+    // Send customer email when booking is confirmed or cancelled
+    const date = booking.bookingDate instanceof Date 
+      ? booking.bookingDate 
+      : (booking.bookingDate as Timestamp).toDate();
+    
+    if (status === 'Confirmed') {
+      sendBookingStatusConfirmationEmail({
+        customerName: booking.customerName,
+        customerEmail: booking.customerEmail,
+        serviceName: booking.serviceName,
+        formattedDate: format(date, 'EEEE, MMMM d, yyyy'),
+        formattedTime: format(date, 'hh:mm a'),
+        customerAddress: booking.customerAddress,
+        additionalInfo: booking.additionalInfo,
+      }).catch((err) => console.warn('[EMAIL WARNING] Failed to send confirmation email:', err));
+    }
+
+    if (status === 'Cancelled') {
+      sendBookingCancellationEmail({
+        customerName: booking.customerName,
+        customerEmail: booking.customerEmail,
+        serviceName: booking.serviceName,
+        formattedDate: format(date, 'EEEE, MMMM d, yyyy'),
+        formattedTime: format(date, 'hh:mm a'),
+        customerAddress: booking.customerAddress,
+        additionalInfo: booking.additionalInfo,
+      }).catch((err) => console.warn('[EMAIL WARNING] Failed to send cancellation email:', err));
+    }
 
   } catch (error) {
     console.error("Error updating status or sending email:", error);
