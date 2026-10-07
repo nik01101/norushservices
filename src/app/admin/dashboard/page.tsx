@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -90,8 +90,12 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(true);
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(true);
+  const allDocsRef = useRef<Map<string, Booking>>(new Map()); // tracks all loaded bookings across pagination switches
+  const docsInViewRefs = useRef<import('firebase/firestore').DocumentReference[]>([]); // refs currently monitored by onSnapshot
+
   const [lastVisible, setLastVisible] = useState<any>(null); // Stores the last document of the current page
   const [firstVisible, setFirstVisible] = useState<any>(null); // Stores the first document of the current page
+  const [paginationKey, setPaginationKey] = useState(0); // toggles to re-trigger subscription useEffect on pagination change
   const [page, setPage] = useState(1);
   const bookingsPerPage = 10;
 
@@ -114,34 +118,83 @@ export default function AdminDashboard() {
     } else if (direction === 'prev' && firstVisible) {
       q = query(q, endBefore(firstVisible), limitToLast(bookingsPerPage));
       setPage(prev => prev - 1);
-    } else { // Initial fetch
+    } else { // Initial fetch or edge case
       q = query(q, limit(bookingsPerPage));
       setPage(1);
     }
 
     getDocs(q).then((querySnapshot) => {
       if (!querySnapshot.empty) {
-        const bookingsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          bookingDate: (doc.data().bookingDate as Timestamp).toDate(),
-        } as Booking));
+        const firstDoc = querySnapshot.docs[0];
+        const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+        setFirstVisible(firstDoc);
+        setLastVisible(lastDoc);
+
+        const docsInView = querySnapshot.docs.map(d => d.ref);
+        docsInViewRefs.current = docsInView;
+
+        const loaded: Booking[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), bookingDate: (doc.data().bookingDate as Timestamp).toDate() } as Booking));
         
-        setBookings(bookingsData);
-        setFirstVisible(querySnapshot.docs[0]);
-        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        // merge into allDocsRef so real-time listener has fresh data to work with
+        const updatedMap = new Map(allDocsRef.current);
+        loaded.forEach(b => updatedMap.set(b.id, b));
+        allDocsRef.current = updatedMap;
+
+        setBookings(loaded);
+        setPaginationKey(prev => prev + 1); // re-trigger subscription for new docs
       } else if (direction !== 'initial') {
         if (direction === 'next') setPage(prev => prev - 1);
-        if (direction === 'prev') setPage(prev => prev + 1);
+        if (direction === 'prev') {
+          const pageBeforeLast = page - 2 >= 1 ? page - 2 : 1;
+          setPage(pageBeforeLast);
+        }
         toast({ title: "No more bookings to show.", variant: 'destructive' });
       }
       setIsLoadingBookings(false);
     });
   };
 
+  // Initial fetch + real-time subscription setup — runs on mount and when doc refs change during pagination
   useEffect(() => {
-    fetchBookings('initial');
-  }, []);
+    if (page === 1 && !firstVisible) {
+      allDocsRef.current.clear();
+      fetchBookings('initial');
+    }
+  }, [page, firstVisible]);
+
+  // Real-time subscription: keep current-view bookings live-updated via onSnapshot
+  const subscriptionRefs = useRef<Map<string, () => void>>(new Map());
+
+  useEffect(() => {
+    // Unsubscribe from all previously watched docs
+    subscriptionRefs.current.forEach(unsub => unsub());
+    subscriptionRefs.current.clear();
+
+    // Attach listeners for each doc currently in view
+    docsInViewRefs.current.forEach(ref => {
+      const unsub = onSnapshot(ref, (docSnap) => {
+        if (!docSnap.exists()) return;
+        const booking: Booking = { id: docSnap.id, ...docSnap.data(), bookingDate: (docSnap.data().bookingDate as Timestamp).toDate() } as Booking;
+
+        const updatedMap = new Map(allDocsRef.current);
+        const wasExisting = updatedMap.has(booking.id);
+        if (!wasExisting) {
+          // Only visible doc arrived real-time — extend view
+          docsInViewRefs.current.push(ref);
+        }
+        updatedMap.set(booking.id, booking);
+        allDocsRef.current = updatedMap;
+
+        setBookings(prev => prev.map(b => b.id === booking.id ? booking : b));
+      });
+      subscriptionRefs.current.set(ref.id, unsub);
+    });
+
+    return () => {
+      // cleanup handled at top of effect
+    };
+  }, [docsInViewRefs, paginationKey]);
+
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'availability', 'settings'), (docSnap) => {
